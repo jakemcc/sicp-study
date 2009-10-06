@@ -4,9 +4,7 @@
     (Math/abs (- first second)))
 
 (defn good-enough? [first second]
-    (if (< (change first second) (* 0.001 second))
-        true
-        false))
+    (< (change first second) (* 0.001 second)))
 
 (defn square [x] (* x x))
 
