@@ -22,6 +22,8 @@
 (defn cube-root [x]
     (cube-root-iter 0 1.0 x))
 
+(println (cube-root 9))
+
 
 ; user=> (cube-root 9)
 ; 2.0800838232385224
