@@ -1,10 +1,10 @@
 ; exercise 1.8
 
-(defn change [first second]
+(defn diff-between [first second]
     (Math/abs (- first second)))
 
 (defn good-enough? [first second]
-    (< (change first second) (* 0.001 second)))
+    (< (diff-between first second) (* 0.001 second)))
 
 (defn square [x] (* x x))
 
