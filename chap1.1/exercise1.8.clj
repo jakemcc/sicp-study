@@ -12,13 +12,12 @@
     (/ (+ (/ x (square guess)) (* 2.0 guess))
         3))
 
-(defn cube-root-iter [prev-guess curr-guess x]
-    (if (good-enough? prev-guess curr-guess)
-        curr-guess
-        (cube-root-iter curr-guess (improve curr-guess x) x)))
-
 (defn cube-root [x]
-    (cube-root-iter 0 1.0 x))
+ (let [cube-root-iter (fn [prev-guess curr-guess]
+                        (if (good-enough? prev-guess curr-guess)
+                            curr-guess
+                            (recur curr-guess (improve curr-guess x) )))]
+    (cube-root-iter 0 1.0)))
 
 (println (cube-root 9))
 
