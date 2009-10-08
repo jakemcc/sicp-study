@@ -9,8 +9,7 @@
 (defn square [x] (* x x))
 
 (defn improve [guess x]
-    (/ (+ (/ x (square guess)) (* 2.0 guess))
-        3))
+    (/ (+ (/ x (square guess)) (* 2.0 guess)) 3))
 
 (defn cube-root [x]
  (let [cube-root-iter (fn [prev-guess curr-guess]
@@ -20,7 +19,6 @@
     (cube-root-iter 0 1.0)))
 
 (println (cube-root 9))
-
 
 ; user=> (cube-root 9)
 ; 2.0800838232385224

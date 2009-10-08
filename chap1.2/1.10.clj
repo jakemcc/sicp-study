@@ -24,7 +24,9 @@
 ; g[n] = 2^n
 
 (defn h [n] (A 2 n))
-
+; h[n] = { when n == 1 => 2
+;        { when n == 2 => 4
+;        { n > 2 =>  2^h[n-1]
 
 (defn k [n] (* 5 n n))
 ; k[n] = 5n^2
