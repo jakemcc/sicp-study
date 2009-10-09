@@ -15,6 +15,18 @@
 (f 2)
 (f 3)
 (f 4)
+(f 5)
 
 ; Iterative
+
+(defn f-iter [n t]
+ (if (< n 3) (+ n t)
+  (f-iter (- n 1)
+     (+ (* 2 (- n 2))
+        (* 3 (- n 3))))))
+
+(f-iter 1 0)
+(f-iter 2 0)
+(f-iter 3 0)
+(f-iter 4 0)
 
