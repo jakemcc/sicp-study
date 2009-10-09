@@ -16,6 +16,7 @@
 (f 3)
 (f 4)
 (f 5)
+(f 6)
 
 ; Iterative
 
@@ -23,10 +24,13 @@
  (if (< n 3) (+ n t)
   (f-iter (- n 1)
      (+ (* 2 (- n 2))
-        (* 3 (- n 3))))))
+        (* 3 (- n 3))
+        t))))
 
 (f-iter 1 0)
 (f-iter 2 0)
 (f-iter 3 0)
 (f-iter 4 0)
+(f-iter 5 0)
+(f-iter 6 0)
 
