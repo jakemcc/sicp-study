@@ -1,3 +1,4 @@
+(ns sicp.exercise1.11)
 ; Exercise 1.11
 
 ; f(n)  = n if n < 3
@@ -11,8 +12,6 @@
      (* 2 (f (- n 2))) 
      (* 3 (f (- n 3))))))
 
-(f 1)
-(f 2)
 (f 3)
 (f 4)
 (f 5)
@@ -20,17 +19,17 @@
 
 ; Iterative
 
-(defn f-iter [n t]
- (if (< n 3) (+ n t)
-  (f-iter (- n 1)
-     (+ (* 2 (- n 2))
-        (* 3 (- n 3))
-        t))))
+(defn f2 [n]
+ (let [f-iter (fn [a b c count]
+               (if (< count 3)
+                a
+                (recur (+ a (* 2 b) (* 3 c)) a b (dec count))))]
+  (if (< n 3) n
+  (f-iter 2 1 0 n))))
 
-(f-iter 1 0)
-(f-iter 2 0)
-(f-iter 3 0)
-(f-iter 4 0)
-(f-iter 5 0)
-(f-iter 6 0)
+(f2 3)
+(f2 4)
+(f2 5)
+(f2 6)
+
 
