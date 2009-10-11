@@ -62,6 +62,14 @@
 (search-for-primes 10000)
 (search-for-primes 100000)
 (search-for-primes 1000000)
+(search-for-primes 10000000)
+(search-for-primes 100000000)
+(search-for-primes 1000000000)
+(search-for-primes 10000000000)
+(search-for-primes 1000000000000)
+; 1000000000039 *** 1126992125 nanoseconds
+; 1000000000061 *** 1137560220 nanoseconds
+; 1000000000063 *** 1154209115 nanoseconds
 
 ; Helper functions for estimating runtime of numbers
 ; an order of magnitude higher
