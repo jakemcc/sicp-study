@@ -21,9 +21,11 @@
 
 (defn f2 [n]
  (let [f-iter (fn [a b c count]
-               (if (< count 3)
-                a
-                (recur (+ a (* 2 b) (* 3 c)) a b (dec count))))]
+               (if (< count 3) a
+                   (recur (+ a (* 2 b) (* 3 c))
+                          a
+                          b
+                          (dec count))))]
   (if (< n 3) n
   (f-iter 2 1 0 n))))
 

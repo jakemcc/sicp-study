@@ -5,7 +5,6 @@
 (defn cube [x] (* x x x))
 
 (defn p [x]
- (println "p")
  (- (* 3 x)
     (* 4 (cube x))))
 

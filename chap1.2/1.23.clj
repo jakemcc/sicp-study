@@ -27,10 +27,7 @@
  (System/nanoTime))
 
 (defn report-prime [n elapsed-time]
- (print n)
- (print " *** ")
- (print elapsed-time)
- (println " nanoseconds")
+ (println (str n " *** " elapsed-time " nanoseconds"))
  true)
 
 (defn start-prime-test [n start-time]
