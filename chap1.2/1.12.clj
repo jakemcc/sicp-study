@@ -1,6 +1,6 @@
 ; Exercise 1.12
 ; A work in progress.  Right now it only calculates rows in Pascal's
-; Trianangle.  Need to clean up and make it get back the actual 
+; Triangle.  Need to clean up and make it get back the actual 
 ; triangle
 (defn moving-sum2 [coll]
  (let [helper (fn [i res]
