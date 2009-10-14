@@ -1,5 +1,4 @@
 ; Exercise 1.17
-(ns exercise1.17)
 
 ; Original O(b)
 ; (defn my-mult [a b]
@@ -11,7 +10,8 @@
 (defn halve [x] (/ x 2))
 
 (defn my-mult [a b]
- (cond (= b 1) a
+ (cond (= b 0) 0
+;       (= b 1) a
        (even? b) (my-mult (doub a) (halve b))
        :else (+ a (my-mult a (dec b)))))
 
