@@ -2,7 +2,7 @@
 ; A work in progress.  Right now it only calculates rows in Pascal's
 ; Trianangle.  Need to clean up and make it get back the actual 
 ; triangle
-(defn moving-sum-2 [coll]
+(defn moving-sum2 [coll]
  (let [helper (fn [i res]
                (if (< i (dec (count coll)))
                     (recur (inc i) 
@@ -19,8 +19,8 @@
                     (recur (moving-sum2 previous-row) (inc i))
                     (moving-sum2 previous-row)))]
   (if (= n 0) 
-        '(1)
+        (println '(1))
       (helper '(1) 1))))
 
-(pascals-triangle-row 5)
+(do println (pascals-triangle-row 50))
 
