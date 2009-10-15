@@ -1,5 +1,4 @@
 ; Exercise 1.22
-(ns exercise1.22)
 
 ; Code taken from exercise 1.21
 (defn divides? [a b]
