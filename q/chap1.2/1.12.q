@@ -1,6 +1,6 @@
 nextrow:{[p] 2 msum p, 0};
 pth:{[p; n] $[0 = n; p; pth[nextrow p;n-1]]};
-pt:{[n] $[n = 0; 1; pth[1; n]]};
+pt:{[n]  pth[1; n]};
 
 show pt 0;
 show pt 1;
