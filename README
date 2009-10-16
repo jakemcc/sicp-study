@@ -1,0 +1,7 @@
+Solutions for problems from the Structure and Interpretation of Computer Programs.
+Working through the book with some coworkers and online people.
+
+Contained in this repository are solutions to various problems throughout the book.
+
+I'm focusing on doing the problems in Clojure but there will be some other
+languages thrown in as I feel like it.
