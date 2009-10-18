@@ -16,8 +16,6 @@
 (integral cube 0 1 0.01)
 (integral cube 0 1 0.001)
 
-
-
 (defn h [a b n]
  (/ (- b a) n))
 
