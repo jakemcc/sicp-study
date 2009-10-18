@@ -24,12 +24,11 @@
 (defn simp-rule [f a b n]
  (let [h (/ (- b a) n)
        next-input (fn [k] (+ a (* k h)))
-       sri (fn sri [k]
-            (cond (= k 0) (+ (f a) (sri (inc k)))
-                  (= k n) (f (+ a (* k h)))
-                  (odd? k) (+ (* 4 (f (next-input k))) (sri (inc k)))
-                  :else (+ (* 2 (f (next-input k))) (sri (inc k)))))]
-  (* (/ h 3) (sri 0))))
+       sri (fn [k accum]
+            (cond (= k n) (+ accum (f (next-input k)))
+                  (odd? k) (recur (inc k) (+ accum (* 4 (f (next-input k)))))
+                  :else (recur (inc k) (+ accum (* 2 (f (next-input k)))))))]
+  (* (/ h 3) (sri 1 (f a)))))
 
 (simp-rule cube 0.0 1.0 100)
 (simp-rule cube 0.0 1.0 1000)
