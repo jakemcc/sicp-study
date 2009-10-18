@@ -21,12 +21,15 @@
 (defn h [a b n]
  (/ (- b a) n))
 
-; (defn simpsons-rule [f a b n]
-;  (let [h (/ (- b a) n)
-;        helper (fn [k accum]
-;            (let [x ((+ a (* k h)))]
-;             (cond (= k 0) (helper (inc k) (+ accum (f x)))
-;                   (= k n) (+ accum (f x))
-;                   (even? k) (+ (* 2 (f x)) (helper (inc k) accum))
-;                   :else (+ (* 4 (f x)) (helper (inc k) accum)))))]
-;        (helper 0 0)))
+(defn simp-rule [f a b n]
+ (let [h (/ (- b a) n)
+       next-input (fn [k] (+ a (* k h)))
+       sri (fn sri [k]
+            (cond (= k 0) (+ (f a) (sri (inc k)))
+                  (= k n) (f (+ a (* k h)))
+                  (odd? k) (+ (* 4 (f (next-input k))) (sri (inc k)))
+                  :else (+ (* 2 (f (next-input k))) (sri (inc k)))))]
+  (* (/ h 3) (sri 0))))
+
+(simp-rule cube 0.0 1.0 100)
+(simp-rule cube 0.0 1.0 1000)
