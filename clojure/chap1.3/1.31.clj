@@ -1,5 +1,6 @@
 ; Exercise 1.31
 
+; Iterative version
 (defn product [term a nxt b]
  (let [iter (fn [a result]
              (if (> a b)
@@ -14,3 +15,12 @@
 (do println (factorial 4))
 (do println (factorial 5))
 
+; Recursive version
+(defn product [term a nxt b]
+ (if (> a b)
+     1
+     (* (term a)
+        (product term (nxt a) nxt b))))
+
+(do println (factorial 4))
+(do println (factorial 5))
