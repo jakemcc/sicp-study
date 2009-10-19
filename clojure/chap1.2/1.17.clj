@@ -11,7 +11,6 @@
 
 (defn my-mult [a b]
  (cond (= b 0) 0
-;       (= b 1) a
        (even? b) (my-mult (doub a) (halve b))
        :else (+ a (my-mult a (dec b)))))
 
