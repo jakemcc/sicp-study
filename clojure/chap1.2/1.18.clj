@@ -18,6 +18,7 @@
  (do println (str a " * " b " = " (my-mult a b))))
 
 (print-mult 2 0)
+(print-mult 0 2)
 (print-mult 2 1)
 (print-mult 2 5)
 (print-mult 1 5)

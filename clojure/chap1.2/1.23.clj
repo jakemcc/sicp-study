@@ -1,5 +1,4 @@
 ; Exercise 1.23
-(ns exercise1.23)
 
 (defn next-divisor [x]
  (if (= x 2)
