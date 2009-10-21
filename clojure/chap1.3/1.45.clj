@@ -58,8 +58,8 @@
 ; Use following syntax on wolframalpha.com to get answers
 ; fifth root of 52
 ; fourth root of 16
-(do println (sqrt 4.0))
-(do println (cube-root 9.0))
-(do println (fourth-root 16.0))
-(do println (fifth-root 32.0))
-(do println (sixth-root 64.0))
+(println (sqrt 4.0))
+(println (cube-root 9.0))
+(println (fourth-root 16.0))
+(println (fifth-root 32.0))
+(println (sixth-root 64.0))

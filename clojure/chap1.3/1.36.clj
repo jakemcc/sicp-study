@@ -34,7 +34,7 @@
               guess))
 
 
-(do println "with dampening")
+(println "with dampening")
 (dampening 2.0)
 ; With dampening -> 10 tries
 ; 2.0
@@ -47,7 +47,7 @@
 ; 4.555599411610624
 ; 4.5555465521473675
 ; 4.555537551999825
-(do println "no dampening")
+(println "no dampening")
 (no-dampening 2.0)
 ; With no dampening 35
 ; 2.0

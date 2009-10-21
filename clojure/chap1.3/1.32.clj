@@ -23,13 +23,13 @@
  (sum cube a inc b))
 
 ; Compare to 1.30.  Same answer
-(do println (sum-cubes 1 10))
+(println (sum-cubes 1 10))
 
 (defn factorial [n]
  (product identity 1 inc n))
 
 ; Compare to 1.31
-(do println (factorial 5))
+(println (factorial 5))
    
 
 
@@ -42,5 +42,5 @@
                  (combiner (term a) (iter (nxt a)))))]
   (iter a)))
 
-(do println (sum-cubes 1 10))
-(do println (factorial 5))
+(println (sum-cubes 1 10))
+(println (factorial 5))

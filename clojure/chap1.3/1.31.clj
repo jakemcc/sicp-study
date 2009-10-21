@@ -12,8 +12,8 @@
 (defn factorial [n]
  (product identity 1 inc n))
 
-(do println (factorial 4))
-(do println (factorial 5))
+(println (factorial 4))
+(println (factorial 5))
 
 ; Recursive version
 (defn product [term a nxt b]
@@ -22,5 +22,5 @@
      (* (term a)
         (product term (nxt a) nxt b))))
 
-(do println (factorial 4))
-(do println (factorial 5))
+(println (factorial 4))
+(println (factorial 5))
