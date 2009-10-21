@@ -9,12 +9,12 @@
  (< (abs (- v1 v2)) tolerance))
 
 (defn fixed-point [f first-guess]
- (let [attempt (fn attempt[guess]
+ (let [attempt (fn [guess]
           (let [next (f guess)]
                  (println guess)
                  (if (close-enough? guess next)
                       next
-                      (attempt next))))]
+                      (recur next))))]
        (attempt first-guess)))
 
 (defn calculate-golden-ratio
