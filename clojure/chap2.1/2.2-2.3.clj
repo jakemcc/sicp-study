@@ -59,75 +59,44 @@
 ; area and perimeter function which takes a rectangle of either
 ; abstraction and figures out the area or perimeter
 
-; Rectangle defined by four points
-(defn make-rectangle [p1 p2 p3 p4]
- (list p1 p2 p3 p4))
+; Rectangle defined by length and width points
+(defn make-rectangle [length width]
+ (list length width))
 
-(defn top-left-corner [r]
+(defn length [r]
  (first r))
 
-(defn top-right-corner [r]
- (nth r 1))
-
-(defn bottom-left-corner [r]
- (nth r 2))
-
-(defn bottom-right-corner [r]
+(defn width [r]
  (last r))
 
-(defn x-diff [p1 p2]
- (Math/abs (- (x-point p1) (x-point p2))))
-
-(defn y-diff [p1 p2]
- (Math/abs (- (y-point p1) (y-point p2))))
-
 (defn area [r]
- (* (x-diff (top-left-corner r) (top-right-corner r))
-    (y-diff (top-right-corner r) (bottom-right-corner r))))
+ (* (length r)
+    (width r)))
 
 (defn perimeter [r]
- (* 2 (+ (x-diff (top-left-corner r) (top-right-corner r))
-         (y-diff (top-left-corner r) (bottom-left-corner r)))))
+ (* 2 (+ (length r)
+         (width r))))
 
-(area (make-rectangle
-       (make-point 1 1)
-       (make-point 5 1)
-       (make-point 1 4)
-       (make-point 5 4)))
-
-(perimeter (make-rectangle
-            (make-point 1 1)
-            (make-point 5 1)
-            (make-point 1 4)
-            (make-point 5 4)))
+(println (area (make-rectangle 7 5)))
+(println (perimeter (make-rectangle 7 5)))
 
 ; Rectangle defined by 2 points
 (defn make-rectangle [p1 p2]
  (list p1 p2))
 
-(defn top-left-corner [r]
- (first r))
+(defn length [r]
+ (Math/abs (- (y-point (first r))
+              (y-point (last r)))))
 
-(defn top-right-corner [r]
- (make-point (x-point (top-left-corner r))
-             (y-point (bottom-right-corner r))))
+(defn width [r]
+ (Math/abs (- (x-point (first r))
+              (x-point (last r)))))
 
-(defn bottom-left-corner [r]
- (make-point (y-point (top-left-corner r))
-             (x-point (bottom-right-corner r))))
-
-(defn bottom-right-corner [r]
- (last r))
 
 (def x (make-rectangle
        (make-point 1 1)
-       (make-point 5 4)))
-(top-left-corner x)
-(top-right-corner x)
-(bottom-left-corner x)
-(bottom-right-corner x)
-(area x)
+       (make-point 8 6)))
 
-(perimeter (make-rectangle
-            (make-point 1 1)
-            (make-point 5 4)))
+(println (area x))
+
+(println (perimeter x))
