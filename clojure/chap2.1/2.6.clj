@@ -31,3 +31,7 @@
  (fn [f]
   (compose (a f) (b f))))
 
+
+; http://briancarper.net/blog/church-numerals-in-clojure
+; Good blog post.  Brian's unchurch function was useful
+; in wrapping mind around this
