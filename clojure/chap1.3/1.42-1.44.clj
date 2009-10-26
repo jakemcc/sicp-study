@@ -16,12 +16,17 @@
 
     ((compose square inc) 6)
 
+    ; Could also use Clojure's comp
+    (defn compose [f g]
+     (comp f g))
+
+    ((compose square inc) 6)
+
 
 ; Exercise 1.43
     ; Write a function which takes a function f
     ; and a number n and returns a function which 
     ; applies f n times
-
 
     (defn repeated [f n]
      (let [helper (fn [g n]
@@ -38,20 +43,25 @@
     ; Write a function 'smooth which smoothes a function f by taking the average
     ; of f(x - dx), f(x), f(x + dx)
 
-    (def dx 0.00001)
 
     (defn avg [x y z]
      (/ (+ x y z) 3))
 
+    (def dx 0.01)
     (defn smooth [f]
      (fn [x] 
       (avg (f (- x dx)) 
            (f x)
            (f (+ x dx)))))
 
+    ((smooth square) 6)
+
+
     ; Write a function which returns a procedure which smooths a provided procedure f
     ; n times
 
     (defn n-smooth [f n]
      (fn [x]
-      ((repeated (smooth f) n) x)))
+      (((repeated smooth n) f) x)))
+
+    ((n-smooth square 2) 6)

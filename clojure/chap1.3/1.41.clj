@@ -7,9 +7,16 @@
 (defn my-double [f]
  (fn [x] (f (f x))))
 
+
 ; What value is returned by
 ; (((my-double (my-double my-double)) inc) 5)
 ; 21 
 
 (((my-double (my-double my-double)) inc) 5)
 ; 21
+
+; Using clojures comp
+(defn dub [f]
+ (comp f f))
+
+(((dub (dub dub)) inc) 5)
