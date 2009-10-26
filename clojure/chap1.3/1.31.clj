@@ -1,6 +1,6 @@
 ; Exercise 1.31
 
-; Iterative version
+;{{{ Iterative version
 (defn product [term a nxt b]
  (let [iter (fn [a result]
              (if (> a b)
@@ -15,7 +15,22 @@
 (println (factorial 4))
 (println (factorial 5))
 
-; Recursive version
+; Iterative using (loop ...)
+(defn product [term a nxt b]
+ (loop [a a
+        result 1]
+   (if (> a b)
+       result
+       (recur (nxt a)
+              (* result (term a))))))
+
+(println (factorial 4))
+(println (factorial 5))
+;}}}
+  
+
+
+;{{{ Recursive version
 (defn product [term a nxt b]
  (if (> a b)
      1
@@ -24,3 +39,6 @@
 
 (println (factorial 4))
 (println (factorial 5))
+;}}}
+
+; vim: foldmethod=marker

@@ -1,6 +1,6 @@
 ; Exercise 1.32
 
-; Iterative solution
+;{{{ Iterative solution
 (defn accumulate
  [combiner null-value term a nxt b]
  (let [iter (fn [a result]
@@ -8,6 +8,7 @@
                  (recur (nxt a)
                         (combiner result (term a)))))]
   (iter a null-value)))
+;}}}
 
 ; Product defined using accumulate
 (defn product [term a nxt b]
@@ -34,13 +35,15 @@
 
 
 
-; Recursive solution 
+;{{{ Recursive solution 
 (defn accumulate
  [combiner null-value term a nxt b]
  (letfn [(iter [a]
              (if (> a b) null-value 
                  (combiner (term a) (iter (nxt a)))))]
   (iter a)))
-
+;}}}
 (println (sum-cubes 1 10))
 (println (factorial 5))
+
+; vim: foldmethod=marker
