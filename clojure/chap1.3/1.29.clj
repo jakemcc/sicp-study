@@ -22,11 +22,25 @@
 (defn simp-rule [f a b n]
  (let [h (/ (- b a) n)
        next-input (fn [k] (+ a (* k h)))
-       sri (fn [k accum]
+       iter (fn [k accum]
             (cond (= k n) (+ accum (f (next-input k)))
                   (odd? k) (recur (inc k) (+ accum (* 4 (f (next-input k)))))
                   :else (recur (inc k) (+ accum (* 2 (f (next-input k)))))))]
-  (* (/ h 3) (sri 1 (f a)))))
+  (* (/ h 3) (iter 1 (f a)))))
 
-(simp-rule cube 0.0 1.0 100)
-(simp-rule cube 0.0 1.0 1000)
+(println (simp-rule cube 0.0 1.0 100))
+(println (simp-rule cube 0.0 1.0 1000))
+
+; Showing what it looks like using loop instead of function
+(defn simp-rule [f a b n]
+ (let [h (/ (- b a) n)
+       next-input (fn [k] (+ a (* k h)))]
+  (* (/ h 3)
+     (loop [k 1
+            accum (f a)]
+       (cond (= k n) (+ accum (f (next-input k)))
+             (odd? k) (recur (inc k) (+ accum (* 4 (f (next-input k)))))
+             :else (recur (inc k) (+ accum (* 2 (f (next-input k))))))))))
+
+(println (simp-rule cube 0.0 1.0 100))
+(println (simp-rule cube 0.0 1.0 1000))
