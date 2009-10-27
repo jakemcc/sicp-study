@@ -10,26 +10,24 @@
 ;; Different implementation:
 
 (defn change [first second]
-    (Math/abs (- first second)))
+ (Math/abs (- first second)))
 
 (defn good-enough?? [first second]
-    (if (< (change first second) (* 0.001 second))
-        true
-        false))
+ (< (change first second) (* 0.001 second)))
 
 (defn average [x y]
-    (/ (+ x y) 2))
+ (/ (+ x y) 2))
 
 (defn improve [guess x]
-    (average guess (/ x guess)))
+ (average guess (/ x guess)))
 
 (defn sqrt-iter [prev-guess curr-guess x]
-    (if (good-enough?? prev-guess curr-guess)
-        curr-guess
-        (sqrt-iter curr-guess (improve curr-guess x) x)))
+ (if (good-enough?? prev-guess curr-guess)
+     curr-guess
+     (recur curr-guess (improve curr-guess x) x)))
 
 (defn sqrt [x]
-    (sqrt-iter 0 1.0 x))
+ (sqrt-iter 0 1.0 x))
 
 (sqrt 1000000000)
 (sqrt 0.001)

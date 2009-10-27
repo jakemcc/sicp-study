@@ -1,15 +1,15 @@
 ; exercise 1.8
 
 (defn diff-between [first second]
-    (Math/abs (- first second)))
+ (Math/abs (- first second)))
 
 (defn good-enough? [first second]
-    (< (diff-between first second) (* 0.001 second)))
+ (< (diff-between first second) (* 0.001 second)))
 
 (defn square [x] (* x x))
 
 (defn improve [guess x]
-    (/ (+ (/ x (square guess)) (* 2.0 guess)) 3))
+ (/ (+ (/ x (square guess)) (* 2.0 guess)) 3))
 
 (defn cube-root [x]
  (let [cube-root-iter (fn [prev-guess curr-guess]
@@ -20,5 +20,13 @@
 
 (println (cube-root 9))
 
+; Do it using (loop)
+(defn cube-root [x]
+ (loop [prev-guess 0 curr-guess 1.0]
+   (if (good-enough? prev-guess curr-guess)
+       curr-guess
+       (recur curr-guess (improve curr-guess x)))))
+
+(println (cube-root 9))
 ; user=> (cube-root 9)
 ; 2.0800838232385224
