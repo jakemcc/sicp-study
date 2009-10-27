@@ -38,6 +38,16 @@
     ((repeated square 2) 5)
     ((repeated square 3) 5)
 
+    ; using loop
+    (defn repeated [f n]
+     (loop [g f n (dec n)]
+       (if (= n 0) g
+           (recur (fn [x] (f (g x))) (dec n)))))
+
+    ((repeated square 1) 5)
+    ((repeated square 2) 5)
+    ((repeated square 3) 5)
+
 
 ; Exercise 1.44
     ; Write a function 'smooth which smoothes a function f by taking the average
