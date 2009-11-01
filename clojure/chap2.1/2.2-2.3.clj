@@ -4,6 +4,8 @@
 ; A line segment is represented by 2 points.
 ; A point is represented by an x and y coordinate.
 
+; Define segments and points using lists and positions to tell what
+; data represents
 (defn make-segment [s e]
  (list s e))
 
@@ -21,13 +23,35 @@
 
 (defn y-point [p]
  (last p))
-
+    ;
 ; Could also define y-point and x-point as
 ; (def y-point last)
 ; (def x-point first)
 ; Could do a similar thing with start- and end-segment
 ; Would not want to do this with the constructors
 ; as that would allow non-sensical lines and points
+
+; Could also use Clojures defstruct
+(defstruct segment :start :end)
+(defn make-segment [s e]
+ (struct segment s e))
+
+(defn start-segment [ls]
+ (:start ls))
+
+(defn end-segment [ls]
+ (:end ls))
+
+(defstruct point :x :y)
+(defn make-point [x y]
+ (struct point x y))
+
+(defn x-point [p]
+ (:x p))
+
+(defn y-point [p]
+ (:y p))
+
 
 (defn avg [a b]
  (/ (+ a b) 2))
