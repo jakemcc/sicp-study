@@ -31,6 +31,10 @@
  (fn [f]
   (compose (a f) (b f))))
 
+((one inc) 0)
+((two inc) 0)
+(((add-church two two) inc) 0)
+
 
 ; http://briancarper.net/blog/church-numerals-in-clojure
 ; Good blog post.  Brian's unchurch function was useful
