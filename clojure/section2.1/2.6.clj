@@ -20,6 +20,8 @@
 
 (def two (fn [f] (fn [x] (f (f x)))))
 
+(def three (fn [f] (fn [x] (f (f (f x))))))
+
 (defn- compose [f g]
  (fn [x] (f (g x))))
 
@@ -35,6 +37,19 @@
 ((two inc) 0)
 (((add-church two two) inc) 0)
 
+(defn mul-church [a b]
+ (fn [f]
+  (a (b f))))
+
+(defn exp-church [a b]
+ (b a))
+
+(((mul-church (add-church two two) two) inc) 0)
+(((mul-church three two) inc) 0)
+(((mul-church two three) inc) 0)
+
+(((exp-church two three) inc) 0)
+(((exp-church three two) inc) 0)
 
 ; http://briancarper.net/blog/church-numerals-in-clojure
 ; Good blog post.  Brian's unchurch function was useful
