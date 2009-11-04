@@ -1,30 +1,25 @@
 ; Exercise 2.27
-; NOT COMPLETE
-;
-; Modify reverse procedure from 2.18 to make a deep-reverse
-; procedure that takes a list as arguments and returns
-; as its value the list with its elements reversed
-; and with all sublists deep-reversed as well.
-;
-; For example:
-; (def x (list (list 1 2) (list 3 4)))
-; (reverse x)
-; -> ((3 4) (1 2))
-; (deep-reverse x)
-; -> ((4 3) (2 1))
 
+(defn append [list1 list2]
+ (if (empty? list1)
+     list2
+     (cons (first list1) (append (rest list1) list2))))
 
-(def x '((1 2) (3 4)))
-
-(reverse x)
 
 (defn deep-reverse [s]
- (cond (empty? s) s
-       (not (seq? s)) s
+ (cond (empty? s) nil 
+       (seq? (first s))
+         (append (deep-reverse (rest s))
+                 (list (deep-reverse (first s))))
        :else
-         ((reverse s)
-          (deep-reverse (first s)))
+         (append (deep-reverse (rest s))
+                 (list (first s)))))
 
-(deep-reverse '(1 2 3 4))
-(deep-reverse x)
 
+(defn print-dr [s]
+ (println "Before: " s)
+ (println "After : " (deep-reverse s)))
+ 
+(print-dr '(1 2 3))
+(print-dr '((1 2) (3 4)))
+(print-dr '((1 2 (3 4)) (5 6 7)))
