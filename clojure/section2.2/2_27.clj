@@ -1,18 +1,12 @@
 ; Exercise 2.27
 
-(defn append [list1 list2]
- (if (empty? list1)
-     list2
-     (cons (first list1) (append (rest list1) list2))))
-
-
 (defn deep-reverse [s]
  (cond (empty? s) nil 
        (seq? (first s))
-         (append (deep-reverse (rest s))
+         (concat (deep-reverse (rest s))
                  (list (deep-reverse (first s))))
        :else
-         (append (deep-reverse (rest s))
+         (concat (deep-reverse (rest s))
                  (list (first s)))))
 
 
