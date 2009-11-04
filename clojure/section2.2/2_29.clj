@@ -1,5 +1,6 @@
 ; Exercise 2.29
-(ns ex2_29)
+(ns ex2_29
+ (:use clojure.test))
 
 (defstruct mobile :left :right)
 (defn make-mobile [left right]
@@ -55,8 +56,61 @@
                                                (make-branch 4 7)))))
 
 ; should be 19
-(println (total-weight simple))
-; Should be 29
-(println (total-weight complicated))
+(deftest total-weight-works
+ (is (= 19 (total-weight simple)))
+ (is (= 29 (total-weight complicated)))
+ (is (= 12 (total-weight (make-branch 3 (make-mobile (make-branch 2 4)
+                                                     (make-branch 1 8)))))))
 
 
+; Part B
+; A mobile is balanced if the torque applied by top-left branch is 
+; equal to that applied by top-right branch (that is, if the length of left
+; rod multiplied by weight hanging from that rod is equal to same product on right side) and
+; if each submobile hanging off its branches is balanced.  Design a predicate that tests whether
+; a binary mobile is balanced.
+
+(defn torque [x]
+ (* (branch-length x)
+    (total-weight x)))
+
+
+
+(deftest torque-works
+    (is (= 44 (torque (make-branch 4 (make-mobile (make-branch 1 5) (make-branch 2 6))))))
+    (is (= 36 (torque (make-branch 3 (make-mobile (make-branch 2 4)
+                                                  (make-branch 1 8))))))
+    (is (= 36 (torque (make-branch 6 (make-mobile (make-branch 2 3)
+                                                  (make-branch 2 3)))))))
+
+
+
+(defn balanced? [m]
+ (= (torque (left-branch m)) (torque (right-branch m))))
+
+
+
+(deftest works-with-simple-mobile-is-balanced
+ (is (balanced? (make-mobile (make-branch 2 3)
+                             (make-branch 3 2))))
+ (is (not (balanced? (make-mobile (make-branch 2 5)
+                                  (make-branch 3 2))))))
+
+(deftest works-with-mobiles-with-balanced-submobiles
+ (is (balanced? (make-mobile (make-branch 6 (make-mobile (make-branch 2 3)
+                                                         (make-branch 2 3)))
+                             (make-branch 3 (make-mobile (make-branch 2 4)
+                                                         (make-branch 1 8)))))))
+ 
+(deftest non-balanced-submobiles-cause-non-balanced-root-module
+ ; Show one branch is not balanced and other is
+ (is (not (balanced? (make-mobile (make-branch 2 5)
+                                  (make-branch 1 9)))))
+ (is (balanced? (make-mobile (make-branch 2 1)
+                             (make-branch 2 1))))
+ (is (not (balanced? (make-mobile (make-branch 21 (make-mobile (make-branch 2 1)
+                                                               (make-branch 2 1)))
+                                  (make-branch 3 (make-mobile (make-branch 2 5)
+                                                              (make-branch 1 9))))))))
+
+(run-tests)
