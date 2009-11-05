@@ -120,3 +120,10 @@
                                                               (make-branch 1 9))))))))
 
 (run-tests)
+
+; d) If we change the representation of mobiles and branches, what
+; needs to change to have the rest of the program work?
+;
+; Answer:
+;   The selectors would need to change.  So would the predicates I created
+;   to tell if something is a mobile or a branch (mobile? and branch?)
