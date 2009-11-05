@@ -86,7 +86,13 @@
 
 
 (defn balanced? [m]
- (= (torque (left-branch m)) (torque (right-branch m))))
+ (if (mobile? m)
+          (and (balanced? (left-branch m))
+               (balanced? (right-branch m))
+               (= (torque (left-branch m)) (torque (right-branch m))))
+      (if (mobile? (branch-structure m))
+             (balanced? (branch-structure m))
+           true)))
 
 
 
