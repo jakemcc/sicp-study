@@ -53,13 +53,13 @@
 
 (defn matrix-*-matrix [mat1 mat2]
  (let [cols (transpose mat2)]
-  (map (fn [r]
+  (map (fn [row]
 		(map 
-		 (fn [c] 
+		 (fn [column] 
 		  (accumulate 
 	                +
 					0
-					(map * r c)))
+					(map * row column)))
 		 cols))
 		mat1)))
 
