@@ -24,3 +24,20 @@
 (println (fold-right + 1 (list 1 2 3)))
 (println (fold-left + 1 (list 1 2 3)))
 
+
+; Exercise 2.39
+(use 'clojure.test)
+
+(defn reverse-using-fold-right [sq]
+ (fold-right (fn [x y] (concat y (list x))) nil sq))
+
+(deftest test-using-fold-right-to-reverse
+ (is (= '(5 4 3 2 1) (reverse-using-fold-right '(1 2 3 4 5)))))
+
+(defn reverse-using-fold-left [sq]
+  (fold-left (fn [x y] (cons y x)) nil sq))
+ 
+(deftest test-using-fold-left-to-reverse
+  (is (= '(5 4 3 2 1) (reverse-using-fold-left '(1 2 3 4 5)))))
+
+(run-tests)
