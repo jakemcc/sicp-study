@@ -34,8 +34,7 @@
           (if (empty? things)
               answer
               (recur (rest things)
-                     (list answer (square (first things))
-                           ))))]
+                     (list answer (square (first things))))))]
   (iter items nil)))
 
-(square-list (list 1 2 3 4))
+(println (square-list (list 1 2 3 4)))
