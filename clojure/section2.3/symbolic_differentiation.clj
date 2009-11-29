@@ -154,7 +154,6 @@
 ; Exercise 2.58
 ;
 ; A)
-; Simply copied below to reset functions from 2.57
 (defn make-sum [a1 a2]
  (cond (=number? a1 0) a2
        (=number? a2 0) a1
@@ -182,8 +181,9 @@
 (defn multiplicand [p]
  (first (rest (rest p))))
 
-; pretty sure this is wrong
 (newline)
-(println "Exercise 2.58, I think it is wrong though")
 (println '(deriv (x + (3 * (x + (y + 2)))) x))
 (println (deriv '(x + (3 * (x + (y + 2)))) 'x))
+
+; B)
+;
