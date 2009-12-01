@@ -93,20 +93,58 @@
 ; '(x + 3 * (x + y + 2))
 ; Actually follow an order of operation
 
-; Was originally thinking that if sum? was changed to return true only if a sum
-; is the next operation that should be done it would solve this problem.  Thinking
-; about it more I'm not sure if this would.  Am hoping to have some discussion
-; in study group about this.
-;
-; (defn sum? [x]
-;  (and (seq? x) (= (second x) '+)))
-; 
-; (deftest sum?-works-with-operator-precedence
-;  (is (= true (sum? '(2 + 3))))
-;  (is (= false (sum? '(2 + 3 * 5)))))
-; 
-; (deftest product?-works-with-operator-precedence
-;  (is (= true (product? '(2 * 3))))
-;  (is (= true (product? '(2 + 3 * 5)))))
-; 
-; (run-tests)
+(defn index-of [m coll]
+ (loop [r coll
+        i 0]
+   (cond (empty? r) nil
+         (= m (first r)) i
+         :else (recur (rest r) (inc i)))))
+
+(deftest index-of-works
+ (is (= 1 (index-of '+ '(1 + 2))))
+ (is (= nil (index-of '+ '(1 * 2)))))
+
+(defn augend [x]
+ (let [aug (drop (inc (index-of '+ x)) x)]
+  (if (= 1 (count aug)) (first aug)
+      aug)))
+
+(deftest augend-works
+ (is (= '(3 * (x + y + 2)) (augend '(x + 3 * (x + y + 2)))))
+ (is (= 1 (augend '(3 * (x + y + 2) + 1))))
+ (is (= 'x (augend '(2 + x)))))
+
+(defn addend [x]
+ (let [aug (take (index-of '+ x) x)]
+  (if (= 1 (count aug)) (first aug)
+      aug)))
+
+(deftest addend-works
+ (is (= 'x (addend '(x + 3 * (x + y + 2)))))
+ (is (= '(3 * (x + y + 2)) (addend '(3 * (x + y + 2) + 1))))
+ (is (= 2 (addend '(2 + x)))))
+
+(deftest make-sum-works
+ (is (= '(3 + (x * 4)) (make-sum 3 '(x * 4))))
+ (is (= '(3 + x) (make-sum 3 'x))))
+
+(deftest deriv-works
+ (is (= 4 (deriv '(x + x + x + x) 'x)))
+ (is (= 3 (deriv '(1 * x + x * 2) 'x)))
+ (is (= 4 (deriv '(x + 3 * (x + y + 2)) 'x)))
+ (is (= 4 (deriv '(3 * (x + y + 2) + x) 'x))))
+
+(defn any? [t]
+ (reduce (fn [x y] (or x y))
+         false
+         t))
+
+(defn sum? [s]
+ (any? (map #(= % '+) s)))
+
+(deftest sum?-works
+ (is (sum? '(3 * x + 5)))
+ (is (not (sum? '(3 * (x + 5) * y))))
+ (is (sum? '(3 + x))))
+
+(run-tests)
