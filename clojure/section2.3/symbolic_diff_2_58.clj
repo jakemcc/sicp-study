@@ -83,7 +83,7 @@
 (defn multiplicand [p]
  (first (rest (rest p))))
 
-(newline)
+(println "Exercise 2.58, A")
 (println '(deriv (x + (3 * (x + (y + 2)))) x))
 (println (deriv '(x + (3 * (x + (y + 2)))) 'x))
 
@@ -100,39 +100,15 @@
          (= m (first r)) i
          :else (recur (rest r) (inc i)))))
 
-(deftest index-of-works
- (is (= 1 (index-of '+ '(1 + 2))))
- (is (= nil (index-of '+ '(1 * 2)))))
-
 (defn augend [x]
  (let [aug (drop (inc (index-of '+ x)) x)]
   (if (= 1 (count aug)) (first aug)
       aug)))
 
-(deftest augend-works
- (is (= '(3 * (x + y + 2)) (augend '(x + 3 * (x + y + 2)))))
- (is (= 1 (augend '(3 * (x + y + 2) + 1))))
- (is (= 'x (augend '(2 + x)))))
-
 (defn addend [x]
  (let [aug (take (index-of '+ x) x)]
   (if (= 1 (count aug)) (first aug)
       aug)))
-
-(deftest addend-works
- (is (= 'x (addend '(x + 3 * (x + y + 2)))))
- (is (= '(3 * (x + y + 2)) (addend '(3 * (x + y + 2) + 1))))
- (is (= 2 (addend '(2 + x)))))
-
-(deftest make-sum-works
- (is (= '(3 + (x * 4)) (make-sum 3 '(x * 4))))
- (is (= '(3 + x) (make-sum 3 'x))))
-
-(deftest deriv-works
- (is (= 4 (deriv '(x + x + x + x) 'x)))
- (is (= 3 (deriv '(1 * x + x * 2) 'x)))
- (is (= 4 (deriv '(x + 3 * (x + y + 2)) 'x)))
- (is (= 4 (deriv '(3 * (x + y + 2) + x) 'x))))
 
 (defn any? [t]
  (reduce (fn [x y] (or x y))
@@ -142,9 +118,44 @@
 (defn sum? [s]
  (any? (map #(= % '+) s)))
 
-(deftest sum?-works
- (is (sum? '(3 * x + 5)))
- (is (not (sum? '(3 * (x + 5) * y))))
+(deftest index-of-should-find-element
+ (is (= 1 (index-of '+ '(1 + 2)))))
+(deftest index-of-should-return-nil-if-elem-not-found
+ (is (= nil (index-of '+ '(1 * 2)))))
+
+(deftest augend-should-return-entire-part-after-first-upper-level-+
+ (is (= '(3 * (x + y + 2)) (augend '(x + 3 * (x + y + 2))))))
+(deftest augend-should-return-single-element-after-first-upper-level-+
+ (is (= 1 (augend '(3 * (x + y + 2) + 1)))))
+(deftest augend-should-handle-simple-addition
+ (is (= 'x (augend '(2 + x)))))
+
+(deftest addend-should-return-single-element-before-first-upper-level-+
+ (is (= 'x (addend '(x + 3 * (x + y + 2))))))
+(deftest addend-should-return-entire-part-before-first-upper-level-+
+ (is (= '(3 * (x + y + 2)) (addend '(3 * (x + y + 2) + 1)))))
+(deftest addend-should-handle-simple-addition
+ (is (= 2 (addend '(2 + x)))))
+
+(deftest make-sum-should-handle-complex-expression-as-second-argument
+ (is (= '(3 + (x * 4)) (make-sum 3 '(x * 4)))))
+(deftest make-sum-should-handle-simple-experessions-as-arguments
+ (is (= '(3 + x) (make-sum 3 'x))))
+
+(deftest deriv-should-handle-multiple-additions-in-a-row
+ (is (= 4 (deriv '(x + x + x + x) 'x))))
+(deftest deriv-should-handle-situation-with-no-nesting
+ (is (= 3 (deriv '(1 * x + x * 2) 'x))))
+(deftest deriv-should-handle-starting-with-+-operation-with-nested-+-operations
+ (is (= 4 (deriv '(x + 3 * (x + y + 2)) 'x))))
+(deftest deriv-should-handle-final-operation-in-list-being-+-with-nested-+-operations
+ (is (= 4 (deriv '(3 * (x + y + 2) + x) 'x))))
+
+(deftest sum?-should-detect-sum-which-isnt-first-operator
+ (is (sum? '(3 * x + 5))))
+(deftest sum?-should-ignore-+-that-isnt-on-outmost-level
+ (is (not (sum? '(3 * (x + 5) * y)))))
+(deftest sum?-should-handle-simple-case
  (is (sum? '(3 + x))))
 
 (run-tests)
