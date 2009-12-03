@@ -1,4 +1,8 @@
 ; Exercise 2.59
+;
+; Write a procedure union-set which does a union
+; of two sets where the sets are represented
+; by unique lists
 
 (use 'clojure.test)
 
@@ -20,9 +24,9 @@
 
 
 (deftest should-return-simple-union
- (is (= '(3 4 5 1) (union-set '(3 4 5) '(1)))))
+ (is (= '(3 7 5 1) (union-set '(3 7 5) '(1)))))
 
 (deftest should-return-same-set
- (is (= '(1 2 3) (union-set '(1 2 3) '(1 2 3)))))
+ (is (= '(1 2 3) (union-set '(1 4 3) '(1 4 3)))))
 
 (run-tests)
