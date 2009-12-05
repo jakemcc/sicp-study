@@ -4,7 +4,6 @@
 ; Now use ordered lists to represent sets
 
 
-
 ; Not using any nice things in Clojure
 (defn adjoin-set [x s]
  (loop [head '()
