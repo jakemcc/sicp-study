@@ -82,22 +82,27 @@
                     (adjoin-set x (right-branch set)))))
 ;}}}
 
+; Basic idea
+; Convert trees to ordered lists in O(n)
+; Perform O(n) intersection or union
+; Convert ordered list to tree in O(n)
+
 (defn union-set [set1 set2]
  (let [list1 (tree->list-2 set1)
        list2 (tree->list-2 set2)]
    (->> (union-set-lists list1 list2)
         (list->tree))))
 
-(deftest union-set-works
- (is (= (list->tree '(1 2 3 4 5))
-        (union-set (list->tree '(1 3 5))
-                   (list->tree '(2 4))))))
-
 (defn intersection-set [set1 set2]
  (let [list1 (tree->list-2 set1)
        list2 (tree->list-2 set2)]
    (->> (intersection-set-lists list1 list2)
         (list->tree))))
+
+(deftest union-set-works
+ (is (= (list->tree '(1 2 3 4 5))
+        (union-set (list->tree '(1 3 5))
+                   (list->tree '(2 4))))))
 
 (deftest intersection-set-works
  (is (= (list->tree '(3))
