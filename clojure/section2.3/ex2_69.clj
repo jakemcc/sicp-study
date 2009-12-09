@@ -54,12 +54,10 @@
            combined-first-two (make-code-tree lowest-weight second-lowest-weight)
            remaining-pairs (rest (rest pairs))
            combined-pairs (adjoin-set combined-first-two remaining-pairs)]
-     (successive-merge combined-pairs))))
+       (successive-merge combined-pairs))))
 
 (defn generate-huffman-tree [pairs]
- (let [p (make-leaf-set pairs)]
- (successive-merge p)))
-
+ (successive-merge (make-leaf-set pairs)))
 
 (def sample-tree
  (make-code-tree (make-leaf 'A 4)
@@ -70,6 +68,12 @@
 
 (deftest generated-tree-matches-sample
  (is (= sample-tree (generate-huffman-tree '((A 4) (B 2) (C 1) (D 1))))))
+
+; Can't do this, might be a limitation of functions from book
+; Had check in successive-merge for if pairs < 2, but then make-code-tree could not
+; handle it
+;(deftest generated-tree-matches-sample
+; (is (= sample-tree (generate-huffman-tree '((A 4))))))
 
 (run-tests)
 
