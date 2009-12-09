@@ -48,7 +48,7 @@
 ;}}}
 
 (defn successive-merge [pairs]
- (if (= 1 (count pairs)) (first pairs)
+ (if (= 2 (count pairs)) (make-code-tree (first pairs) (second pairs))
      (let [lowest-weight (first pairs)
            second-lowest-weight (second pairs)
            combined-first-two (make-code-tree lowest-weight second-lowest-weight)
