@@ -65,14 +65,14 @@
 
 
 ; Exercise 2.68
-; Finish an encode function.  Test against solution from 2.67
+; Finish an encode-symbol function.  Test against solution from 2.67
     
 (defn encode-symbol [elem tree]
- (letfn [(contains-e? [syms] (some #(= % elem) syms))]
+ (letfn [(contains-elem? [syms] (some #(= % elem) syms))]
   (cond (and (leaf? tree)) '()
-        (contains-e? (symbols (right-branch tree))) 
+        (contains-elem? (symbols (right-branch tree))) 
           (cons 1 (encode-symbol elem (right-branch tree)))
-        (contains-e? (symbols (left-branch tree))) 
+        (contains-elem? (symbols (left-branch tree))) 
           (cons 0 (encode-symbol elem (left-branch tree)))
         :else 'error)))
 
