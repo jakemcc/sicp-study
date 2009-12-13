@@ -1,4 +1,4 @@
-; Exercise 2.67 and 2.68
+; Huffman Encoding problems
 
 (use 'clojure.test)
 
@@ -43,6 +43,18 @@
                          (decode-1 (rest bits) tree))
                    (decode-1 (rest bits) next-branch)))))]
   (decode-1 bits tree)))
+
+(defn adjoin-set [x s]
+ (cond (empty? s) (list x)
+       (< (weight x) (weight (first s))) (cons x s)
+       :else (cons (first s)
+                   (adjoin-set x (rest s)))))
+
+(defn make-leaf-set [pairs]
+ (if (empty? pairs) '()
+     (let [pair (first pairs)]
+      (adjoin-set (make-leaf (first pair) (second pair))
+                  (make-leaf-set (rest pairs))))))
 ;}}}
 
 
@@ -96,5 +108,33 @@
  (is (= sample-message (encode (decode sample-message sample-tree) sample-tree))))
 
 
+; Exercise 2.69
+
+(defn successive-merge [pairs]
+ (if (= 2 (count pairs)) (make-code-tree (first pairs) (second pairs))
+     (let [lowest-weight (first pairs)
+           second-lowest-weight (second pairs)
+           combined-first-two (make-code-tree lowest-weight second-lowest-weight)
+           remaining-pairs (rest (rest pairs))
+           combined-pairs (adjoin-set combined-first-two remaining-pairs)]
+       (successive-merge combined-pairs))))
+
+(defn generate-huffman-tree [pairs]
+ (successive-merge (make-leaf-set pairs)))
+
+(deftest generated-tree-matches-sample
+ (is (= sample-tree (generate-huffman-tree '((A 4) (B 2) (C 1) (D 1))))))
+
+; Can't do this, might be a limitation of functions from book
+; Had check in successive-merge for if pairs < 2, but then make-code-tree could not
+; handle it
+;(deftest generated-tree-matches-sample
+; (is (= sample-tree (generate-huffman-tree '((A 4))))))
+
+
 (run-tests)
+
+
+
+
 ; vim: set foldmethod=marker:
