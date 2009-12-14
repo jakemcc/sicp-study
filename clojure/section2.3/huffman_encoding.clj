@@ -132,6 +132,49 @@
 ; (is (= sample-tree (generate-huffman-tree '((A 4))))))
 
 
+; Exercise 2.71
+
+(def tree (generate-huffman-tree '((A 2) (NA 16) (BOOM 1) (SHA 3)
+                                   (GET 2) (YIP 9) (JOB 2) (WAH 1))))
+
+(def song '(GET A JOB
+            SHA NA NA NA NA NA NA NA NA GET A JOB
+            SHA NA NA NA NA NA NA NA NA
+            WAH YIP YIP YIP YIP YIP YIP YIP YIP YIP
+            SHA BOOM))
+
+(def encoded-message (encode song tree))
+
+(println "Number of bits needed to encode song:" (count encoded-message))
+
+;log2(8) = 3
+(println "Number of bits if using fixed length:" (* (count song) 3))
+
+
+
+
+; Exercise 2.71
+
+; Not going to draw this out.  Here is for n = 5
+(println (generate-huffman-tree '((a 1) (b 2) (c 4) (d 8) (e 16))))
+
+; There will always be one bit required for the most frequent symbol.
+;
+; For the least frequent symbol it will be (n - 1) bits required.  With
+; each symbol having a frequency of a power of 2 it results in a linear
+; path down the tree to get to the least frequent element.
+
+
+; Exercise 2.72
+; O(n^2). Worst case are trees described in exercise 2.71. To get to 
+; least used word need to traverse entire tree.  At each level need
+; to search the list of elements to see if we are going
+; the correct direction. Those sets were implemented as unordered lists
+; so search time on them is O(n).  You do this search at each of the n
+; levels.  So O(n*n) = O(n^2)
+
+
+
 (run-tests)
 
 
