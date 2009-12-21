@@ -6,14 +6,14 @@
 
 (defn attach-tag [tt contents]
  (if (number? contents) contents
-     (cons tt content)))
+     (cons tt contents)))
 
 (defn type-tag [datum]
  (cond (number? datum) 'scheme-number
-       (seq? datum) (car datum)
+       (seq? datum) (first datum)
        :else (Error. (str "Bad tagged datum -- TYPE-TAG " datum))))
 
 (defn contents [datum]
  (cond (number? datum) datum
        (seq? datum) (rest datum)
-       (Error. (str "Bag tagged datum -- CONTENTS " datum))))
+       :else (Error. (str "Bag tagged datum -- CONTENTS " datum))))
