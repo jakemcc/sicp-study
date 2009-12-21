@@ -12,8 +12,8 @@
 
 ; Put this with the rational package installers
 (put 'equ? '(rational rational)
- (fn [x y] (and (= (numer x) (numer y))
-                (= (denom x) (denom y)))))
+ (fn [x y] (= (* (numer x) (denom y))
+              (* (numer y) (numer x)))))
 
 ; Put in complex installers
 (put 'equ? '(complex complex)
