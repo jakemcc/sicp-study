@@ -82,4 +82,8 @@
 ;(println (deriv '(* x y) 'x))
 ;(println (deriv '(* (* x y) (+ x 3)) 'x))
 
+; c) I'm not going to do this.
+
+; d) The way I've implemented get and put nothing would have to change.
+
 ; vim: set foldmethod=marker:
