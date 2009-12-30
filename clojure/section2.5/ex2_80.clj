@@ -1,4 +1,8 @@
 ; Exercise 2.80
+;
+; The below code wont run.  Have not acctually defined all of the
+; procedures used by the below code.  I am treating this as 
+; more of a thought exercise with some example code.
 
 (defn my-zero? [x]
  (apply-generic 'my-zero? x))

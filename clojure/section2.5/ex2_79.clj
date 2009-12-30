@@ -1,7 +1,8 @@
 ; Exercise 2.79
+;
 ; The below code wont run.  Have not acctually defined all of the
-; procedures used by the below code.  This is more of a thought
-; exercise with some example code.
+; procedures used by the below code.  I am treating this as 
+; more of a thought exercise with some example code.
 
 (defn equ? [x y]
  (apply-generic 'equ? x y))
