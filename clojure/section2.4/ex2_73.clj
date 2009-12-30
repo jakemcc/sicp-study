@@ -27,8 +27,7 @@
 (defn deriv [exp v]
  (cond (number? exp) 0
        (variable? exp) (if (same-variable? exp v) 1 0)
-       :else ((get-op 'deriv (operator exp)) (operands exp)
-                                             v)))
+       :else ((get-op 'deriv (operator exp)) exp v)))
 ; A)
 ;
 ; This was turned into a data-directed dispatch function
@@ -41,7 +40,7 @@
 ; B) Write procedures for sums and products
 
 ; Followed book and am hiding functions inside another
-; function.  Should probably use some namespaces...
+; function.  Should/can this be done using namespaces?
 (defn install-derivative-package []
  (letfn [(make-sum [a1 a2] (cond (=number? a1 0) a2
                                  (=number? a2 0) a1
@@ -71,16 +70,19 @@
          (put-op 'deriv '+ deriv-sum)
          (put-op 'deriv '* deriv-product))
  'done)
+
 (install-derivative-package)
 
 (deftest can-deriv-using-functions-from-table
  (is (= 1 ((get-op 'deriv '+) '(+ x 3) 'x)))
  (is (= 3 ((get-op 'deriv '*) '(* x 3) 'x))))
-(run-tests)
 
-;(deriv '(+ x 3) 'x)
-;(println (deriv '(* x y) 'x))
-;(println (deriv '(* (* x y) (+ x 3)) 'x))
+(deftest can-call-deriv-directly
+ (is (= 1  (deriv '(+ x 3) 'x)))
+ (is (= 'y (deriv '(* x y) 'x)))
+ (is (= 4  (deriv '(+ (* x 3) x) 'x))))
+
+(run-tests)
 
 ; c) I'm not going to do this.
 
