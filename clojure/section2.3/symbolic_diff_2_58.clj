@@ -91,7 +91,7 @@
 
 ; In part B it wants us to allow the following expression
 ; '(x + 3 * (x + y + 2))
-; Actually follow an order of operation
+; and have it follow an order of operation
 
 (defn index-of [m coll]
  (loop [r coll
