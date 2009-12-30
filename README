@@ -1,7 +1,8 @@
-Solutions for problems from the Structure and Interpretation of Computer Programs.
+Solutions for problems from the Structure and Interpretation of
+Computer Programs.
 
-Primary language for solving the problems will be Clojure but there planning
-on solving some problems in other languages as the urge rises.
+Primary language for solving the problems will be Clojure but other
+languages might show up as desire arises.
 
 The Clojure code should not necessarily be taken as idiomatic Clojure.
 There are numerous examples which could be improved by using more
