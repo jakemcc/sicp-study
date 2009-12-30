@@ -2,3 +2,12 @@ Solutions for problems from the Structure and Interpretation of Computer Program
 
 Primary language for solving the problems will be Clojure but there planning
 on solving some problems in other languages as the urge rises.
+
+The Clojure code should not necessarily be taken as idiomatic Clojure.
+There are numerous examples which could be improved by using more
+of Clojure's features.
+
+Choosing Clojure to work through the problems was more of a choice
+to do the exercises in a language I plan on spending more time after
+the book is complete. The goal was not to strive for using specific
+Clojure features to solve SICP problems.
