@@ -3,7 +3,7 @@
 ; Going to use only two argument version of apply-generic
 ; for simplicity
 
-; defs to get it to not give erros when parsing.
+; defs to get it to not give errors when parsing.
 (def type-tag)
 (def contents)
 (def get-coercion)
