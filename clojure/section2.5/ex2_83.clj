@@ -21,3 +21,6 @@
  (make-from-real-imag x 0))
 
 (put 'raise '(real) #(real->complex %))
+
+(defn raise [x]
+ ((get 'raise (type-tag x)) x))
