@@ -83,19 +83,19 @@
           (Error. (str "Polys not in same var -- MUL-POLY " (list p1 p2)))))
  
      ;; Interface to the outer world
-     (tag [p] (attach-tag 'polynomial p))
-     (put 'add '(polynomial polynomial)
+     (tag [p] (attach-tag 'polynomial p))]
+     (put-op 'add '(polynomial polynomial)
       (fn [p1 p2] (tag (add-poly p1 p2))))
-     (put 'mul '(polynomial polynomial)
+     (put-op 'mul '(polynomial polynomial)
       (fn [p1 p2] (tag (mul-poly p1 p2))))
-     (put 'make 'polynomial
-      (fn [v terms] (tag (make-poly v terms))))]
+     (put-op 'make 'polynomial
+      (fn [v terms] (tag (make-poly v terms))))
      'done)))
       
 (defn make-polynomial [v terms]
  ((get 'make 'polynomial) v terms))
 
-(install-derivative-package)
+(install-polynomial-package)
 
 
 ; vim: set foldmethod=marker:
