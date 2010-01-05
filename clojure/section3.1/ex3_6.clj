@@ -9,8 +9,8 @@
  (let [a 5.2 b 3.1 m 1.5]
   (mod (+ (* a x) b) m)))
 
-(def current-random (atom 5.0))
 
+(def #^{:private true} current-random (atom 5.0))
 (defn my-rand
  ([] 
   (swap! current-random rand-update)
