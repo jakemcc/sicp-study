@@ -11,14 +11,14 @@
 (defn =number? [x n]
  (and (number? x) (= x n)))
 
-(def sum?)
-(def product?)
-(def make-product)
-(def make-sum)
-(def addend)
-(def augend)
-(def multiplier)
-(def multiplicand)
+(declare sum? 
+         product?
+         make-product
+         make-sum
+         addend
+         augend
+         multiplier
+         multiplicand)
 
 (defn make-exponentiation [b e]
  (cond (=number? e 0) 1
