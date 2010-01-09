@@ -6,19 +6,20 @@
 (use 'clojure.test)
 
 (defn- rand-update [x]
- (let [a 5.2 b 3.1 m 1.5]
-  (mod (+ (* a x) b) m)))
+  (let [a 5.2 b 3.1 m 1.5]
+    (mod (+ (* a x) b) m)))
 
-
-(def #^{:private true} current-random (atom 5.0))
-(defn my-rand
- ([] 
-  (swap! current-random rand-update)
-  @current-random)
- ([action]
-  (if (= action :generate) (my-rand)))
- ([action seed]
-  (if (= action :reset) (swap! current-random (fn [x] seed)))))
+;(def #^{:private true} current-random (atom 5.0))
+(def my-rand 
+  (let [current-random (atom 5.0)]
+    (fn
+      ([] 
+        (swap! current-random rand-update)
+        @current-random)
+      ([action]
+        (if (= action :generate) (my-rand)))
+      ([action seed]
+        (if (= action :reset) (swap! current-random (fn [x] seed)))))))
 
 
 (deftest test-reset-random-sequence

@@ -34,5 +34,5 @@
    unit-circle-predicate -1.0 1.0 -1.0 1.0 10000))))
 
 
-(dotimes [i 5]
- (println "Pi estimate =" (estimate-pi-using-area-unit-circle)))
+(time (dotimes [i 5]
+ (println "Pi estimate =" (estimate-pi-using-area-unit-circle))))
