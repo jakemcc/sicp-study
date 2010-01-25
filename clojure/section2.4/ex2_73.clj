@@ -40,7 +40,7 @@
 ; B) Write procedures for sums and products
 
 ; Followed book and am hiding functions inside another
-; function.  Should/can this be done using namespaces?
+; function.
 (defn install-derivative-package []
  (letfn [(make-sum [a1 a2] (cond (=number? a1 0) a2
                                  (=number? a2 0) a1
