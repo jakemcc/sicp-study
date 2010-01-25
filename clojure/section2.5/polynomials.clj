@@ -15,7 +15,6 @@
 (def mul)
 (def attach-tag)
 
-; Having issues with just getting this setup :(
 (defn install-polynomial-package []
  (let [the-empty-termlist '()]
   (letfn
