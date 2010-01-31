@@ -1,3 +1,0 @@
-First response is 'b
-
-Second response is '(b c d)
