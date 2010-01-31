@@ -37,4 +37,8 @@
          (create-visual
             (my-cons (make-pair a nil) b))))))
 
-
+(deftest can-make-list-using-pairs
+ (is (= nil (car (my-list nil))))
+ (is (= :a (car (my-list :a))))
+ (is (= :b (car (cdr (my-list :a :b)))))
+ (is (= :c (car (cdr (cdr (my-list :a :b :c)))))))

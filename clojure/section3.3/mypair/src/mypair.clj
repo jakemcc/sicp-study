@@ -5,7 +5,8 @@
  (= clojure.lang.Atom (type p)))
 
 (defn make-pair 
- ([] (atom (struct pair nil nil)))
+ ([] (make-pair nil nil))
+ ([a] (make-pair a nil))
  ([a b] (atom (struct pair a b))))
 
 (defn set-car! [x p]
@@ -24,6 +25,13 @@
  (make-pair
   (car p1)
   p2))
+
+(defn my-list [& elems]
+ (loop [xs (reverse elems), res (make-pair)]
+  (if (nil? xs) res
+      (recur (next xs)
+             (my-cons (make-pair (first xs))
+                      res)))))
 
 (defn create-visual 
  ([ps prefix postfix]
