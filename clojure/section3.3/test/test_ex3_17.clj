@@ -1,17 +1,9 @@
-
 (ns test_ex3_17
  (:use ex3_17
        mypair
        clojure.test))
 
-
-(def simple-three
- (let [a (make-pair :a)
-       b (make-pair :b)
-       c (make-pair :c)]
-  (set-cdr! a b)
-  (set-cdr! b c)
-  a))
+(def simple-three (my-list :a :b :c))
 
 (def three-fakes-four
  (let [a (make-pair :a)
@@ -32,7 +24,6 @@
   (set-cdr! b c)
   a))
  
-
 (deftest should-handle-one
  (is (= 1 (count-pairs (make-pair))))
  (is (= 1 (count-pairs (make-pair :a)))))

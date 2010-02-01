@@ -27,7 +27,8 @@
   p2))
 
 (defn my-list [& elems]
- (loop [xs (reverse elems), res (make-pair)]
+ (loop [xs (next (reverse elems))
+        res (make-pair (first (reverse elems)))]
   (if (nil? xs) res
       (recur (next xs)
              (my-cons (make-pair (first xs))
