@@ -12,12 +12,12 @@
 
 (deftest can-change-car
  (let [pair (make-pair)]
-  (set-car! 4 pair)
+  (set-car! pair 4)
   (is (= 4 (car pair)))))
 
 (deftest can-change-cdr
  (let [pair (make-pair)]
-  (set-cdr! 4 pair)
+  (set-cdr! pair 4)
   (is (= 4 (cdr pair)))))
 
 (deftest can-cons-pairs-together

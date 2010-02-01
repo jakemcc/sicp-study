@@ -9,10 +9,10 @@
  ([a] (make-pair a nil))
  ([a b] (atom (struct pair a b))))
 
-(defn set-car! [x p]
+(defn set-car! [p x]
  (swap! p #(assoc % :car x))) 
 
-(defn set-cdr! [x p]
+(defn set-cdr! [p x]
  (swap! p #(assoc % :cdr x))) 
 
 (defn car [p]
