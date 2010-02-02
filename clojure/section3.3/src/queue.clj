@@ -44,12 +44,13 @@
 (defn get-queue-str [queue]
  (let [backup (atom @queue), rear (rear-ptr queue)]
    (str "("
-        (loop [middle ""]
-         (if (empty-queue? backup) middle
-             (do
-              (let [m (str middle " " (front-queue backup))]
-               (delete-queue! backup)
-               (recur m)))))
+        (.trim 
+         (loop [middle ""]
+          (if (empty-queue? backup) middle
+              (do
+               (let [m (str middle " " (front-queue backup))]
+                (delete-queue! backup)
+                (recur m))))))
         ")")))
            
       

@@ -21,11 +21,11 @@
  (is (= "()" (get-queue-str (make-queue)))))
 
 (deftest can-print-queue
- (is (= "( :a :b :c)" (-> (make-queue)
-                          (insert-queue! :a)
-                          (insert-queue! :b)
-                          (insert-queue! :c)
-                          get-queue-str))))
+ (is (= "(:a :b :c)" (-> (make-queue)
+                         (insert-queue! :a)
+                         (insert-queue! :b)
+                         (insert-queue! :c)
+                         get-queue-str))))
                          
 (deftest after-printing-queue-still-intact
  (let [q (-> (make-queue) (insert-queue! :a) (insert-queue! :b))]
