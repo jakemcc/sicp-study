@@ -1,8 +1,16 @@
 (ns mypair)
 
 (defstruct pair :car :cdr)
+
+(defn car [p]
+ (:car @p))
+
+(defn cdr [p]
+ (:cdr @p))
+
 (defn pair? [p]
- (= clojure.lang.Atom (type p)))
+ (and (= clojure.lang.Atom (type p))))
+
 
 (defn make-pair 
  ([] (make-pair nil nil))
@@ -13,13 +21,8 @@
  (swap! p #(assoc % :car x))) 
 
 (defn set-cdr! [p x]
- (swap! p #(assoc % :cdr x))) 
+ (swap! p #(assoc % :cdr x)))
 
-(defn car [p]
- (:car @p))
-
-(defn cdr [p]
- (:cdr @p))
 
 (defn my-cons [p1 p2]
  (make-pair
@@ -43,4 +46,5 @@
                     (create-visual (cdr ps) "" "")
                     (cdr ps))]
      (str prefix carstr " " cdrstr postfix)))
- ([ps] (create-visual ps "(" ")")))
+ ([ps]
+    (create-visual ps "(" ")")))
