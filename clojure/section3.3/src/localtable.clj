@@ -11,7 +11,7 @@
                   (cond (nil? records) false
                         (same-key? key1 (car (car records))) (car records)
                         :else (my-assoc key1 (cdr records))))
-                (lookup [key-1 key-2]
+                    (lookup [key-1 key-2]
                   (let [subtable (my-assoc key-1 (cdr local-table))]
                     (if subtable
                         (let [record (my-assoc key-2 (cdr subtable))]

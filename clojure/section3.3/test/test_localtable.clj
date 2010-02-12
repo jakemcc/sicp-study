@@ -32,3 +32,4 @@
     ((tab :insert-proc!) :a :b :jake)
     (is (= :jake) ((tab :lookup-proc) :not :keys))))
 
+
