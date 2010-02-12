@@ -26,3 +26,9 @@
     (is (= :jake ((tab :lookup-proc) :a :b)))
     (is (= :mccrary ((tab :lookup-proc) :a :c)))
     (is (= :ekaj ((tab :lookup-proc) :b :a)))))
+
+(deftest can-supply-own-key-compare
+ (let [tab (make-table (fn [x y] true))]
+    ((tab :insert-proc!) :a :b :jake)
+    (is (= :jake) ((tab :lookup-proc) :not :keys))))
+
