@@ -1,13 +1,14 @@
 ; Building blocks for curcuit simultions
 
-(ns circuit-building-blocks)
+(ns circuit-building-blocks
+  (:use agenda))
 
 ; This doens't actually print done like in the example.
 ; Change to not use nil punning when and use if to do that if required
 (defn- call-each
   [procedures]
   (when procedures
-    (car procedures)
+    ((first procedures))
     (recur (next procedures))))
 
 (defn get-signal
@@ -30,7 +31,7 @@
 	     (swap! signal-value (fn [x] new-value))
 	     (call-each @action-procedures))
 
-	    (acept-action-procedure!
+	    (accept-action-procedure!
 	     [proc]
 	     (swap! action-procedures cons proc)
 	     (proc))
@@ -50,7 +51,7 @@
 (defn logical-not [s]
   (cond (= s 0)	1
 	(= s 1) 0
-	:else (Error "Invalid signal")))
+	:else (Error. "Invalid signal")))
 
 (defn inverter
   [input output]
