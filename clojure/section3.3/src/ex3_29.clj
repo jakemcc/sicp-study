@@ -1,6 +1,7 @@
 ; Exercise 3.29
 
-(ns ex3_29)
+(ns ex3_29
+  (:use circuit-building-blocks)
 
 (defn or-gate [a1 a2 output]
   (let [a (make-wire)

@@ -33,7 +33,7 @@
 
 	    (accept-action-procedure!
 	     [proc]
-	     (swap! action-procedures cons proc)
+	     (swap! action-procedures #(cons proc %))
 	     (proc))
 
 	    (dispatch
@@ -83,11 +83,27 @@
     (add-action! a1 and-action-procedure)
     (add-action! a2 and-action-procedure)))
 
+(defn logical-or [a b]
+  (or a b))
+
+(defn or-gate [a1 a2 output]
+  (letfn [(or-action-procedure
+	   []
+	   (let [new-value (logical-or
+			    (get-signal a1)
+			    (get-signal a2))]
+	     (after-delay or-gate-delay
+			  (fn []
+			    (set-signal! output new-value)))))]
+    (add-action! a2 or-action-procedure)
+    (add-action! a1 or-action-procedure))
+  :ok)
+
 (defn half-adder
   [a b s c]
   (let [d (make-wire), e (make-wire)]
     (or-gate a b d)
-    (and-date a b c)
+    (and-gate a b c)
     (inverter c e)
     (and-gate d e s)
     :ok))
@@ -100,5 +116,3 @@
     (half-adder a s sum c2)
     (or-gate c1 c2 c-out)
     :ok))
-
-
