@@ -28,8 +28,9 @@
 	action-procedures (atom '())]
     (letfn [(set-my-signal!
 	     [new-value]
-	     (swap! signal-value (fn [x] new-value))
-	     (call-each @action-procedures))
+	     (while (not (= new-value @signal-value))
+		    (swap! signal-value (fn [x] new-value))
+		    (call-each @action-procedures)))
 
 	    (accept-action-procedure!
 	     [proc]

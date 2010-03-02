@@ -46,9 +46,9 @@
 
 (defn after-delay
   [delay action]
-  (add-to-agenda! (+ delay (current-time the-agenda)
+  (add-to-agenda! (+ delay (current-time the-agenda))
 		     action
-		     the-agenda)))
+		     the-agenda))
 
 (defn remove-first-agenda-item! [agenda]
   (set-segments! agenda (rest-segments agenda)))

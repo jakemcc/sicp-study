@@ -6,8 +6,7 @@
 (defn probe [name wire]
   (add-action! wire
 	       (fn []
-		 (println "Name=" name
-			  "Cur time=" (current-time the-agenda)
+		 (println name (current-time the-agenda)
 			  "New-value=" (get-signal wire)))))
 
 (def input-1 (make-wire))
@@ -21,4 +20,4 @@
 (set-signal! input-1 1)
 (propagate)
 (set-signal! input-2 1)
-(propogate)
+(propagate)
