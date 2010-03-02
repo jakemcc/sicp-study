@@ -3,8 +3,6 @@
 (ns circuit-building-blocks
   (:use agenda))
 
-; This doens't actually print done like in the example.
-; Change to not use nil punning when and use if to do that if required
 (defn- call-each
   [procedures]
   (when procedures
