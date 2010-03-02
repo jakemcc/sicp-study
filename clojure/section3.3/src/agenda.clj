@@ -1,5 +1,8 @@
 ; Agenda for circuit simulator
 
+; I didn't actually do this in a similar fashion as in the book.
+; The order actions are added to the agenda is not the order things
+; at the same time get executed.
 (ns agenda)
 (def inverter-delay 2)
 (def and-gate-delay 3)
