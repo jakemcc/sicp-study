@@ -23,15 +23,29 @@
 (defn for-each-except
   [exception procedure ls]
   (loop [items ls]
-    (cond (nil? items) :done
-	  (= (first items) exception) (recur (next items))
+    (cond (empty? items) :done
+	  (= (first items) exception) (recur (rest items))
 	  :else (do
 		  (procedure (first items))
-		  (recur (next items))))))
+		  (recur (rest items))))))
+
+(deftype Constant [connector] :as this
+  Connection
+  (has-value? [] true)
+  (get-value [] (get-value connector))
+  (set-value! [new-value setter] (Error. "Unknown request -- CONSTANT"))
+  (forget-value! [retractor] (Error. "Unknown request -- CONSTANT"))
+  (connect [new-constraint] (Error. "Unknown request -- CONSTANT")))
+
+(defn make-constant [value connector]
+  (let [constant (Constant connector)]
+    (connect connector constant)
+    (set-value! connector value constant)
+    constant))
 
 (deftype Connector [value informant constraints] :as this
   Connection
-  (has-value? [] (if informant true false))
+  (has-value? [] (if @informant true false))
 
   (get-value [] @value)
 
@@ -41,9 +55,9 @@
 	      (swap! informant (fn [x] setter))
 	      (for-each-except setter
 			       inform-about-value
-			       constraints))
+			       @constraints))
 	  (not (= @value new-value))
-	  (Error. "Contradiction" (list value new-value))
+	  (println (str "Contradiction! (" @value " " new-value ")"))
 	  :else :ignored))
 
   (forget-value! [retractor]
@@ -51,7 +65,7 @@
         (do (swap! informant (fn [x] false))
 	    (for-each-except retractor
 			     inform-about-no-value
-			     constraints))
+			     @constraints))
 	:ignored))
 
   (connect [new-constraint]
@@ -127,3 +141,21 @@
     (connect a1 adder)
     (connect a2 adder)
     (connect sum adder)))
+
+(defn print-probe [name value]
+  (println "Probe: " name " = " value))
+
+(deftype Probe [name connector] :as this
+  Constraint
+  (process-new-value
+   []
+   (print-probe name (get-value connector)))
+  (process-forget-value
+   []
+   (print-probe name "?")))
+
+(defn make-probe [name connector]
+  (let [probe (Probe name connector)]
+    (connect connector probe)
+    probe))
+
