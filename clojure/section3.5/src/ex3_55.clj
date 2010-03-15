@@ -2,7 +2,7 @@
 
 (ns ex3-55)
 
-(comment "an attempt"
+(comment "this also worked but I thought it was ugly. Attempt 1."
 	 (defn partial-sum
 	   [s]
 	   ((fn ps [a b]
