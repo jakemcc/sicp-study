@@ -1,4 +1,4 @@
-; Exercise 4.47.
+; Exercise 3.47.
 
 ; a) Write a semaphore in terms of mutex defined in book.
 
@@ -72,4 +72,4 @@
 	    (fn dispatch [m]
 	      (cond (= m :aquire) (aquire)
 		    (= m :release) (release)))]
-      dispatch))
+      dispatch)))

@@ -1,4 +1,4 @@
-; Exericse 4.49
+; Exericse 3.49
 
 ; Deadlock-avoidance through the numbering of locks and aquiring in
 ; an agreed upon order will fail if you don't know all the locks

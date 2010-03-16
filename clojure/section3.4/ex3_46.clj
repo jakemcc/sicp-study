@@ -1,4 +1,4 @@
-; Exercise 4.46.
+; Exercise 3.46.
 
 ; Explain why:
 ;1 (define (test-and-set! cell)
