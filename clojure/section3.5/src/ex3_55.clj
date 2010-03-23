@@ -16,5 +16,5 @@
    (cons
     (first s)
     (map +
-	 (rest s)
+	 (next s)
 	 (partial-sum s)))))
