@@ -13,5 +13,3 @@
             (lazy-seq
              (cons x2 (merge-weighted weight s1 (next s2))))))))
 
-(merge-weighted identity '(1 1 1 1) '(2 2 2 2))
-(merge-weighted - '(1 1 1) '(2 2 2))
