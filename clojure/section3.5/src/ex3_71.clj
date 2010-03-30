@@ -5,11 +5,11 @@
 
 (defn cube [x] (* x x x))
 
-(defn sum-of-two-cubes [x]
-  (+ (cube (first x)) (cube (second x))))
+(defn sum-of-cubes-pair [[x y]]
+  (+ (cube x) (cube y)))
 
 (defn sum-of-cubes-stream []
-  (weighted-pairs sum-of-two-cubes
+  (weighted-pairs sum-of-cubes-pair
                   (iterate inc 1)
                   (iterate inc 1)))
 
