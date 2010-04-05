@@ -12,14 +12,14 @@
      (pairs (next s) (next t))))))
 
 (defn merge-weighted [weight s1 s2]
-  (cond (nil? s1) s2
-        (nil? s2) s1
-        :else
-        (lazy-seq
-         (let [x1 (first s1), x2 (first s2)]
-           (if (<= (weight x1) (weight x2))
-             (cons x1 (merge-weighted weight (next s1) s2))
-             (cons x2 (merge-weighted weight s1 (next s2))))))))
+  (lazy-seq
+   (cond (nil? s1) s2
+	 (nil? s2) s1
+	 :else
+	 (let [x1 (first s1), x2 (first s2)]
+	   (if (<= (weight x1) (weight x2))
+	     (cons x1 (merge-weighted weight (next s1) s2))
+	     (cons x2 (merge-weighted weight s1 (next s2))))))))
 
 (defn weighted-pairs [weight s t]
   (lazy-seq
@@ -28,7 +28,7 @@
     (merge-weighted weight
                     (map (fn [x] (list (first s) x))
                          (next t))
-                    (pairs (next s) (next t))))))
+                    (weighted-pairs weight (next s) (next t))))))
 
 ; Look in ../test/test_ex3_70 for parts being tested
 ; a)

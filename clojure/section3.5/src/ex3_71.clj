@@ -15,17 +15,14 @@
 
 (defn ramanujan-numbers []
   ((fn find-next [s]
-     (if (or (nil? s))
-       nil
-       (let [w1 (sum-of-two-cubes (first s))
-             w2 (sum-of-two-cubes (second s))]
-         (println "(" (first s)
-                  "," (second s)
-                  ") = " w1 w2)
-         (if (= w1 w2)
-           (lazy-seq (cons w1 (find-next (next s))))
-           (recur (next s))))))
+     (lazy-seq
+      (let [w1 (sum-of-cubes-pair (first s))
+	    w2 (sum-of-cubes-pair (second s))]
+	(if (= w1 w2)
+	  (cons w1 (find-next (next s)))
+	  (find-next (next s))))))
    (sum-of-cubes-stream)))
+
 
 
 

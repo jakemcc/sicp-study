@@ -20,6 +20,6 @@
                 (= :reset cmd)
                 (cons (second c)
                       (me (rand-update (second c))
-                          (rest (rest c))))
-                :else '())))))
+                          (rest (rest c)))))))))
    0.5 cmds))
+
