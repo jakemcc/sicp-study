@@ -3,37 +3,9 @@
 
 ; just going to try to do some of the coding things in here
 
-
-(defn my-eval [exp env]
-  (cond (self-evaluating? exp) exp
-        (variable? exp) (lookup-variable-value exp env)
-        (quoted? exp) (text-of-quotation exp)
-        (assignment? exp) (eval-assignment exp env)
-        (definition? exp) (eval-definition exp env)
-        (if? exp) (eval-if exp env)
-        (lambda? exp)
-          (make-procedure (lamda-parameters exp)
-                          (lambda-body exp)
-                          env)
-        (begin? exp)
-          (eval-sequence (begin-actions exp) env)
-        (cond? exp) (my-eval (cond->if exp) env)
-        (application? exp)
-          (my-apply (my-eval (operator exp) env)
-                    (list-of-values (operands exp) env))
-        :else (Error. (str "Unknown expression type -- EVAL" exp))))
-
-(defn my-apply [procedure arguments]
-  (cond (primitive-procedure? procedure)
-          (apply-primitive-procedure procedure arguments)
-        (compound-procedure? procedure)
-          (eval-sequence
-           (procedure-body procedure)
-           (extend-environment
-            (procedure-parameters procedure)
-            arguments
-            (procedure-environment procedure)))
-        :else (Error. (str "Unknown procedure type -- APPLY" procedure))))
+(declare execute-application
+         primitive-procedure-names
+         primitive-procedure-objects)
 
 (declare no-operands?
          first-operand
@@ -88,6 +60,8 @@
 
 (defn quoted? [exp]
   (tagged-list? exp 'quote))
+
+(defn text-of-quotation [exp] (cadr exp))
 
 (defn assignment? [exp]
   (tagged-list? exp 'set!))
@@ -191,7 +165,6 @@
 (defn procedure-body [p] (caddr p))
 (defn procedure-environment [p] (cadddr p))
 
-
 (defn enclosing-environment [env] (cdr env))
 (defn first-frame [env] (car env))
 (def the-empty-environment '())
@@ -215,6 +188,153 @@
       (Error. (str "Too many arguments supplied" vars vals))
       (Error. (str "Too few arguments supplied" vars vals)))))
 
+(defn lookup-variable-value [var env]
+  (letfn [(env-loop [env]
+                    (letfn [(scan [vars vals]
+                                   (cond (null? vars)
+                                         (env-loop (enclosing-environment env))
+                                         (= var (car vars))
+                                         (car vals)
+                                         :else (scan (cdr vars) (cdr vals))))]
+                      (if (= env the-empty-environment)
+                        (Error. (str "Unbound variable" var))
+                        (let [frame (first-frame env)]
+                          (scan (frame-variables frame)
+                                (frame-values frame))))))]
+    (env-loop env)))
+
+(defn set-variable-value! [var val env]
+  (letfn [(env-loop [env]
+                    (letfn [(scan [vars vals]
+                                  (cond (null? vars)
+                                        (env-loop (enclosing-environment env))
+                                        (= var (car vars))
+                                        (set-car! vals val)
+                                        :else (scan (cdr vars) (cdr vals))))]
+                      (if (= env the-empty-environment)
+                        (Error. (str "Unbound variable -- SET!" var))
+                        (let [frame (first-frame env)]
+                          (scan (frame-variables frame)
+                                (frame-values frame))))))]
+    (env-loop env)))
+
+(defn defn-variable! [var val env]
+  (let [frame (first-frame env)]
+    (letfn [(scan [vars vals]
+                  (cond (null? vars)
+                        (add-binding-to-frame! var val frame)
+                        (= var (car vars))
+                        (set-car! vals val)
+                        :else (scan (cdr vars) (cdr vals))))]
+      (scan (frame-variables frame)
+            (frame-values frame)))))
+
+
+
+(defn analyze-sequence [exps]
+  (letfn [(sequentially [proc1 proc2]
+                        (fn [env] (proc1 env) (proc2 env)))
+          (lop [first-proc rest-procs]
+               (if (null? rest-procs)
+                 first-proc
+                 (lop (sequentially first-proc (car rest-procs))
+                      (cdr rest-procs))))]
+    (let [procs (map analyze exps)]
+      (if (null? procs)
+        (Error. "Empty sequence -- ANALYZE"))
+      (lop (car procs) (cdr procs)))))
+
+(defn analyze-application [exp]
+  (let [fproc (analyze (operator exp))
+        aprocs (map analyze (operands exp))]
+    (fn [env]
+      (execute-application (fproc env)
+                           (map (fn [aproc] (aproc env))
+                                aprocs)))))
+
+(defn analyze-self-evaluating [exp]
+  (fn [env] exp))
+
+(defn analyze-quoted [exp]
+  (let [qval (text-of-quotation exp)]
+    (fn [env] qval)))
+
+(defn analyze-variable [exp]
+  (fn [env] (lookup-variable-value exp env)))
+
+(defn analyze-assignment [exp]
+  (let [var (assignment-variable exp)
+        vproc (analyze (assignment-value exp))]
+    (fn [env]
+      (set-variable-value! var (vproc env) env)
+      'ok)))
+
+(defn analyze-definition [exp]
+  (let [var (definition-variable exp)
+        vproc (analyze (definition-value exp))]
+    (fn [env]
+      (defn-variable! var (vproc env) env)
+      'ok)))
+
+(defn analyze-if [exp]
+  (let [pproc (analyze (if-predicate exp))
+        cproc (analyze (if-consequent exp))
+        aproc (analyze (if-alternative exp))]
+    (fn [env]
+      (if (true? (pproc env))
+        (cproc env)
+        (aproc env)))))
+
+(defn analyze-lambda [exp]
+  (let [vars (lambda-parameters exp)
+        bproc (analyze-sequence (lambda-body exp))]
+    (fn [env] (make-procedure vars bproc env))))
+
+(def primitive-procedures
+     (list (list 'car car)
+           (list 'cdr cdr)
+           (list 'cons cons)
+           (list 'null? null?)))
+
+(defn primitive-procedure-names []
+  (map car primitive-procedures))
+
+(defn primitive-procedure-objects []
+  (map (fn [proc] (list 'primitive (cadr proc)))
+       primitive-procedures))
+
+(defn setup-environment []
+  (let [initial-env
+        (extend-environment (primitive-procedure-names)
+                            (primitive-procedure-objects)
+                            the-empty-environment)]
+    (defn-variable! 'true true initial-env)
+    (defn-variable! 'false false initial-env)
+    initial-env))
+
+(def the-global-environment (setup-environment))
+
+(defn primitive-procedure? [proc]
+  (tagged-list? proc 'primitive))
+
+(defn primitive-implementation [proc] (cadr proc))
+
+
+(defn apply-primitive-procedure [proc args]
+  (apply (primitive-implementation proc) args))
+
+(defn execute-application [proc args]
+  (cond (primitive-procedure? proc)
+          (apply-primitive-procedure proc args)
+        (compound-procedure? proc)
+          ((procedure-body proc)
+           (extend-environment (procedure-parameters proc)
+                               args
+                               (procedure-environment proc)))
+        :else
+        (Error. (str
+                 "Unknown procedure type -- EXECUTE-APPLICATION"
+                 proc))))
 
 (defn analyze [exp]
   (cond (self-evaluating? exp) 
@@ -230,3 +350,37 @@
         (application? exp) (analyze-application exp)
         :else
         (Error. (str "Unknown expression type -- ANALYZE" exp))))
+
+(defn my-eval [exp env]
+  (cond (self-evaluating? exp) exp
+        (variable? exp) (lookup-variable-value exp env)
+        (quoted? exp) (text-of-quotation exp)
+        (assignment? exp) (eval-assignment exp env)
+        (definition? exp) (eval-definition exp env)
+        (if? exp) (eval-if exp env)
+        (lambda? exp)
+          (make-procedure (lamda-parameters exp)
+                          (lambda-body exp)
+                          env)
+        (begin? exp)
+          (eval-sequence (begin-actions exp) env)
+        (cond? exp) (my-eval (cond->if exp) env)
+        (application? exp)
+          (my-apply (my-eval (operator exp) env)
+                    (list-of-values (operands exp) env))
+        :else (Error. (str "Unknown expression type -- EVAL" exp))))
+
+(defn my-apply [procedure arguments]
+  (cond (primitive-procedure? procedure)
+          (apply-primitive-procedure procedure arguments)
+        (compound-procedure? procedure)
+          (eval-sequence
+           (procedure-body procedure)
+           (extend-environment
+            (procedure-parameters procedure)
+            arguments
+            (procedure-environment procedure)))
+        :else (Error. (str "Unknown procedure type -- APPLY" procedure))))
+
+(defn interpret [exp]
+  (my-val exp the-global-environment))
