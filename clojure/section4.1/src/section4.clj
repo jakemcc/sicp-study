@@ -1,11 +1,15 @@
 
-(ns section4)
-
-; just going to try to do some of the coding things in here
+(ns section4
+  (:use scheme-helpers
+        environment))
 
 (declare execute-application
          primitive-procedure-names
          primitive-procedure-objects)
+
+(declare my-eval
+         my-apply
+         analyze)
 
 (declare no-operands?
          first-operand
@@ -31,14 +35,16 @@
         :else (do (my-eval (first-exp exps) env)
                   (eval-sequence (rest-exps exps) env))))
 
-(declare set-variable-value! assignment-variable assignment-value)
+(declare assignment-variable assignment-value)
+
 (defn eval-assignment [exp env]
   (set-variable-value! (assignment-variable exp)
                        (my-eval (assignment-value exp) env)
                        env)
   'ok)
 
-(declare define-variable! definition-variable definition-value)
+(declare definition-variable definition-value)
+
 (defn eval-definition [exp env]
   (define-variable! (definition-variable exp)
     (my-eval (definition-value exp) env)
@@ -52,7 +58,6 @@
 
 (defn variable? [exp] (symbol? exp))
 
-
 (defn tagged-list? [exp tag]
   (if (seq? exp)
     (= (first exp) tag)
@@ -65,7 +70,9 @@
 
 (defn assignment? [exp]
   (tagged-list? exp 'set!))
+
 (defn assignment-variable [exp] (second exp))
+
 (defn assignment-value [exp] (nth exp 2))
 
 (defn definition? [exp]
@@ -85,24 +92,20 @@
                  (rest (rest exp)))))          ; body
 
 (defn lambda? [exp] (tagged-list? exp 'lambda))
+
 (defn lambda-parameters [exp] (second exp))
+
 (defn lambda-body [exp] (rest (rest exp)))
 
 (defn make-lambda [parameters body]
   (cons 'lambda (cons parameters body)))
 
-(defn car [x] (first x))
-(defn cdr [x] (next x))
-(defn cadr [x] (second x))
-(defn caddr [x] (first (next (next x))))
-(defn cdddr [x] (next (next (next x))))
-(defn caddr [x] (first (next (next x))))
-(defn cadddr [x] (first (next (next (next x)))))
-(defn null? [x] (nil? x))
-
 (defn if? [exp] (tagged-list? exp 'if))
+
 (defn if-predicate [exp] (cadr exp))
+
 (defn if-consequent [exp] (caddr exp))
+
 (defn if-alternative [exp]
   (if (not (nil? (cdddr exp)))
     (cadddr exp)
@@ -111,14 +114,18 @@
 (defn make-if [predicate consequent alternative]
   (list 'if predicate consequent alternative))
 
-
 (defn begin? [exp] (tagged-list? exp 'begin))
+
 (defn begin-actions [exp] (cdr exp))
+
 (defn last-exp? [xs] (null? (cdr xs)))
+
 (defn first-exp [xs] (car xs))
+
 (defn rest-exps [xs] (cdr xs))
 
 (defn make-begin [xs] (cons 'begin xs))
+
 (defn sequence->exp [xs]
   (cond (null? xs) xs
         (last-exp? xs) (first-exp xs)
@@ -127,19 +134,29 @@
 (defn pair? [x] (seq? x))
 
 (defn application? [exp] (pair? exp))
+
 (defn operator [exp] (car exp))
+
 (defn operands [exp] (cdr exp))
+
 (defn no-operands? [ops] (null? ops))
+
 (defn first-operand [ops] (car ops))
+
 (defn rest-operands [ops] (cdr ops))
 
 (declare expand-clauses)
 (defn cond? [exp] (tagged-list? exp 'cond))
+
 (defn cond-clauses [exp] (cdr exp))
+
 (defn cond-predicate [clause] (car clause))
+
 (defn cond-else-clause? [clause]
   (= (cond-predicate clause) 'else))
+
 (defn cond-actions [clause] (cdr clause))
+
 (defn cond->if [exp]
   (expand-clauses (cond-clauses exp)))
 
@@ -159,77 +176,15 @@
 
 (defn make-procedure [parameters body env]
   (list 'procedure parameters body env))
+
 (defn compound-procedure? [p]
   (tagged-list? p 'procedure))
+
 (defn procedure-parameters [p] (cadr p))
+
 (defn procedure-body [p] (caddr p))
+
 (defn procedure-environment [p] (cadddr p))
-
-(defn enclosing-environment [env] (cdr env))
-(defn first-frame [env] (car env))
-(def the-empty-environment '())
-
-; I think I may have to change how environments work since
-; set-car! and set-cdr! might not work
-(declare set-car! set-cdr!)
-(defn make-frame [variables values]
-  (cons variables values))
-(defn frame-variables [frame] 0(car frame))
-(defn frame-values [frame] (cdr frame))
-(defn add-binding-to-frame! [var val frame]
-  (set-car! frame (cons var (car frame)))
-  (set-cdr! frame (cons val (cdr frame))))
-
-
-(defn extend-environment [vars vals base-env]
-  (if (= (count vars) (count vals))
-    (cons (make-frame vars vals) base-env)
-    (if (< (count vars) (count vals))
-      (Error. (str "Too many arguments supplied" vars vals))
-      (Error. (str "Too few arguments supplied" vars vals)))))
-
-(defn lookup-variable-value [var env]
-  (letfn [(env-loop [env]
-                    (letfn [(scan [vars vals]
-                                   (cond (null? vars)
-                                         (env-loop (enclosing-environment env))
-                                         (= var (car vars))
-                                         (car vals)
-                                         :else (scan (cdr vars) (cdr vals))))]
-                      (if (= env the-empty-environment)
-                        (Error. (str "Unbound variable" var))
-                        (let [frame (first-frame env)]
-                          (scan (frame-variables frame)
-                                (frame-values frame))))))]
-    (env-loop env)))
-
-(defn set-variable-value! [var val env]
-  (letfn [(env-loop [env]
-                    (letfn [(scan [vars vals]
-                                  (cond (null? vars)
-                                        (env-loop (enclosing-environment env))
-                                        (= var (car vars))
-                                        (set-car! vals val)
-                                        :else (scan (cdr vars) (cdr vals))))]
-                      (if (= env the-empty-environment)
-                        (Error. (str "Unbound variable -- SET!" var))
-                        (let [frame (first-frame env)]
-                          (scan (frame-variables frame)
-                                (frame-values frame))))))]
-    (env-loop env)))
-
-(defn defn-variable! [var val env]
-  (let [frame (first-frame env)]
-    (letfn [(scan [vars vals]
-                  (cond (null? vars)
-                        (add-binding-to-frame! var val frame)
-                        (= var (car vars))
-                        (set-car! vals val)
-                        :else (scan (cdr vars) (cdr vals))))]
-      (scan (frame-variables frame)
-            (frame-values frame)))))
-
-
 
 (defn analyze-sequence [exps]
   (letfn [(sequentially [proc1 proc2]
@@ -273,7 +228,7 @@
   (let [var (definition-variable exp)
         vproc (analyze (definition-value exp))]
     (fn [env]
-      (defn-variable! var (vproc env) env)
+      (define-variable! var (vproc env) env)
       'ok)))
 
 (defn analyze-if [exp]
@@ -308,8 +263,8 @@
         (extend-environment (primitive-procedure-names)
                             (primitive-procedure-objects)
                             the-empty-environment)]
-    (defn-variable! 'true true initial-env)
-    (defn-variable! 'false false initial-env)
+    (define-variable! 'true true initial-env)
+    (define-variable! 'false false initial-env)
     initial-env))
 
 (def the-global-environment (setup-environment))
@@ -359,7 +314,7 @@
         (definition? exp) (eval-definition exp env)
         (if? exp) (eval-if exp env)
         (lambda? exp)
-          (make-procedure (lamda-parameters exp)
+          (make-procedure (lambda-parameters exp)
                           (lambda-body exp)
                           env)
         (begin? exp)
@@ -383,4 +338,4 @@
         :else (Error. (str "Unknown procedure type -- APPLY" procedure))))
 
 (defn interpret [exp]
-  (my-val exp the-global-environment))
+  (my-eval exp the-global-environment))
