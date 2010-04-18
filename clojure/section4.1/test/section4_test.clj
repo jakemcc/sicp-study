@@ -47,5 +47,8 @@
 (deftest test-functions
   (interpret
    '(define (ident a) a))
+  (interpret '(define (sum a b) (+ a b)))
   (is (= 5 (interpret '(ident 5))))
-  )
+  (is (= 10 (interpret '(sum 4 6))))
+  (is (= 11 (interpret '(sum (ident 5) 6)))))
+
