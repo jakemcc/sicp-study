@@ -322,7 +322,7 @@
         (Error. (str "Unknown expression type -- ANALYZE " exp))))
 
 (defn my-eval [exp env]
-  (println "EVAL: exp: " exp)
+  ;  (println "EVAL: exp: " exp)
   (cond (self-evaluating? exp) exp
         (variable? exp) (lookup-variable-value exp env)
         (quoted? exp) (text-of-quotation exp)
@@ -342,7 +342,7 @@
         :else (Error. (str "Unknown expression type -- EVAL " exp))))
 
 (defn my-apply [procedure arguments]
-  (println "APPLY: proc: " procedure " args: " arguments)
+  ;  (println "APPLY: proc: " procedure " args: " arguments)
   (cond (primitive-procedure? procedure)
           (apply-primitive-procedure procedure arguments)
         (compound-procedure? procedure)

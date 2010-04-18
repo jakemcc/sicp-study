@@ -26,6 +26,16 @@
        (interpret '(if (= 1 1) true false))
        (interpret '(if (= 1 0) false true))))
 
+(deftest test-cond
+  (are [x] (true? x)
+       (interpret '(cond ((= 1 2) false)
+                         ((= 2 2) true)
+                         ((= 2 3) false)))
+       (interpret '(cond ((= 1 2) false)
+                         ((= 2 3) false)
+                         (else true)))))
+
+
 (deftest test-or
   (is (interpret '(or 5 4 3)))
   (is (false? (interpret '(or false false)))))
@@ -44,7 +54,7 @@
   (interpret '(set! twelve 9))
   (is (= 9 (interpret 'twelve))))
 
-(deftest test-functions
+(deftest test-define
   (interpret
    '(define (ident a) a))
   (interpret '(define (sum a b) (+ a b)))
@@ -52,3 +62,13 @@
   (is (= 10 (interpret '(sum 4 6))))
   (is (= 11 (interpret '(sum (ident 5) 6)))))
 
+(deftest test-lambdas
+  (is (= 10 (interpret '((lambda (a b) (+ a b)) 7 3)))))
+
+(deftest test-recurive-function
+  (interpret
+   '(define (exp x y)
+      (if (= y 1)
+        x
+        (exp (* x x) (- y 1)))))
+  (is (= 25 (interpret '(exp 5 2)))))
