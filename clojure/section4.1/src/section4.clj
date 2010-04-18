@@ -46,7 +46,8 @@
 (declare definition-variable definition-value)
 
 (defn eval-definition [exp env]
-  (define-variable! (definition-variable exp)
+  (define-variable!
+    (definition-variable exp)
     (my-eval (definition-value exp) env)
     env)
   'ok)
@@ -56,7 +57,11 @@
         (string? exp) true
         :else false))
 
-(defn variable? [exp] (symbol? exp))
+; TODO: Need to get this detecting 'true and such as variables...
+(defn variable? [exp]
+  (or (symbol? exp)
+      (= 'true exp)
+      (= 'false exp)))
 
 (defn tagged-list? [exp tag]
   (if (seq? exp)
@@ -249,7 +254,18 @@
      (list (list 'car car)
            (list 'cdr cdr)
            (list 'cons cons)
-           (list 'null? null?)))
+           (list 'null? null?)
+           (list '+ +)
+           (list '- -)
+           (list '* *)
+           (list '/ /)
+           (list '= =)
+           (list '> >)
+           (list '< <)
+           (list 'and (fn [& xs] (reduce #(and %1 %2) true xs)))
+           (list 'or (fn [& xs] (reduce #(or %1 %2) false xs)))))
+
+
 
 (defn primitive-procedure-names []
   (map car primitive-procedures))
@@ -273,7 +289,6 @@
   (tagged-list? proc 'primitive))
 
 (defn primitive-implementation [proc] (cadr proc))
-
 
 (defn apply-primitive-procedure [proc args]
   (apply (primitive-implementation proc) args))
@@ -304,9 +319,10 @@
         (cond? exp) (analyze (cond->if exp))
         (application? exp) (analyze-application exp)
         :else
-        (Error. (str "Unknown expression type -- ANALYZE" exp))))
+        (Error. (str "Unknown expression type -- ANALYZE " exp))))
 
 (defn my-eval [exp env]
+  (println "EVAL: exp: " exp)
   (cond (self-evaluating? exp) exp
         (variable? exp) (lookup-variable-value exp env)
         (quoted? exp) (text-of-quotation exp)
@@ -323,9 +339,10 @@
         (application? exp)
           (my-apply (my-eval (operator exp) env)
                     (list-of-values (operands exp) env))
-        :else (Error. (str "Unknown expression type -- EVAL" exp))))
+        :else (Error. (str "Unknown expression type -- EVAL " exp))))
 
 (defn my-apply [procedure arguments]
+  (println "APPLY: proc: " procedure " args: " arguments)
   (cond (primitive-procedure? procedure)
           (apply-primitive-procedure procedure arguments)
         (compound-procedure? procedure)
@@ -335,7 +352,7 @@
             (procedure-parameters procedure)
             arguments
             (procedure-environment procedure)))
-        :else (Error. (str "Unknown procedure type -- APPLY" procedure))))
+        :else (Error. (str "Unknown procedure type -- APPLY " procedure))))
 
 (defn interpret [exp]
   (my-eval exp the-global-environment))
