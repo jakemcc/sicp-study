@@ -3,6 +3,8 @@
   (:use clojure.test
         section4))
 
+(use-fixtures :each (fn [f] (reset-global-environment) (f)))
+
 (deftest test-self-eval
   (is (= 5 (interpret 5)))
   (is (= "hey" (interpret "hey"))))
@@ -44,8 +46,6 @@
 
 (deftest test-functions
   (interpret
-   '(define (avg a b)
-      (/ (+ a b) 2)))
-
-  (is (= 5 (interpret '(avg 4 6))))
+   '(define (ident a) a))
+  (is (= 5 (interpret '(ident 5))))
   )

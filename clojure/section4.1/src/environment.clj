@@ -25,6 +25,12 @@
       (Error. (str "Too many arguments supplied " vars vals))
       (Error. (str "Too few arguments supplied " vars vals)))))
 
+(defn copy-environment [e]
+  (doall (map #(atom @%) e)))
+
+(defn environments-equal? [x y]
+  (reduce #(and %1 %2) true (map #(= @%1 @%2) x y)))
+
 (defn lookup-variable-value [variable env]
   (letfn [(env-loop [env]
                     (letfn [(scan [frame]
@@ -49,7 +55,4 @@
     (env-loop env)))
 
 (defn define-variable! [variable value env]
-  (let [frame (first-frame env)]
-    (if (contains? @frame variable)
-      (swap! frame assoc variable value)
-      (add-binding-to-frame! variable value frame))))
+  (swap! (first-frame env) frame assoc variable value))

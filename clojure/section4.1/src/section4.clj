@@ -31,7 +31,7 @@
 (declare last-exp? first-exp rest-exps)
 
 (defn eval-sequence [exps env]
-  (cond (last-exp? exps) (eval (first-exp exps) env)
+  (cond (last-exp? exps) (my-eval (first-exp exps) env)
         :else (do (my-eval (first-exp exps) env)
                   (eval-sequence (rest-exps exps) env))))
 
@@ -57,7 +57,6 @@
         (string? exp) true
         :else false))
 
-; TODO: Need to get this detecting 'true and such as variables...
 (defn variable? [exp]
   (or (symbol? exp)
       (= 'true exp)
@@ -180,7 +179,7 @@
                  (expand-clauses rest-clauses))))))
 
 (defn make-procedure [parameters body env]
-  (list 'procedure parameters body env))
+  (list 'procedure parameters body (copy-environment env)))
 
 (defn compound-procedure? [p]
   (tagged-list? p 'procedure))
@@ -265,8 +264,6 @@
            (list 'and (fn [& xs] (reduce #(and %1 %2) true xs)))
            (list 'or (fn [& xs] (reduce #(or %1 %2) false xs)))))
 
-
-
 (defn primitive-procedure-names []
   (map car primitive-procedures))
 
@@ -284,6 +281,9 @@
     initial-env))
 
 (def the-global-environment (setup-environment))
+
+(defn reset-global-environment []
+  (def the-global-environment (setup-environment)))
 
 (defn primitive-procedure? [proc]
   (tagged-list? proc 'primitive))

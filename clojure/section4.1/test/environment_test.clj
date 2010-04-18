@@ -49,3 +49,13 @@
     (define-variable! 'f nil e)
     (is (= false (lookup-variable-value 'g e)))
     (is (= nil (lookup-variable-value 'f e)))))
+
+(deftest need-to-make-copy-of-environment
+  (let [e (extend-environment '(a)
+                              '(1)
+                              the-empty-environment)
+        e2 (copy-environment e)]
+    (is (environments-equal? e e2))
+    (define-variable! 'b 2 e2)
+    (is (not (environments-equal? e e2)))))
+
