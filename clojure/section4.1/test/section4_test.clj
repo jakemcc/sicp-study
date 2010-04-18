@@ -35,7 +35,6 @@
                          ((= 2 3) false)
                          (else true)))))
 
-
 (deftest test-or
   (is (interpret '(or 5 4 3)))
   (is (false? (interpret '(or false false)))))
@@ -65,7 +64,7 @@
 (deftest test-lambdas
   (is (= 10 (interpret '((lambda (a b) (+ a b)) 7 3)))))
 
-(deftest test-recurive-function
+(deftest test-recursive-function
   (interpret
    '(define (exp x y)
       (if (= y 1)
