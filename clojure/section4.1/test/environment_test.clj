@@ -40,3 +40,12 @@
                               the-empty-environment)]
     (define-variable! 'b 11 e)
     (is (= 11 (lookup-variable-value 'b e)))))
+
+(deftest can-lookup-variables-which-have-false-value
+  (let [e (extend-environment '(a b c d)
+                              '(1 2 3 4)
+                              the-empty-environment)]
+    (define-variable! 'g false e)
+    (define-variable! 'f nil e)
+    (is (= false (lookup-variable-value 'g e)))
+    (is (= nil (lookup-variable-value 'f e)))))

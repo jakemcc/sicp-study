@@ -28,8 +28,8 @@
 (defn lookup-variable-value [variable env]
   (letfn [(env-loop [env]
                     (letfn [(scan [frame]
-                                  (if-let [value (get frame variable)]
-                                    value
+                                  (if (contains? frame variable)
+                                    (get frame variable)
                                     (env-loop (enclosing-environment env))))]
                       (if (= env the-empty-environment)
                         (Error. (str "Unbound variable " variable))
