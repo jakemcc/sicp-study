@@ -179,7 +179,7 @@
                  (expand-clauses rest-clauses))))))
 
 (defn make-procedure [parameters body env]
-  (list 'procedure parameters body (copy-environment env)))
+  (list 'procedure parameters body env))
 
 (defn compound-procedure? [p]
   (tagged-list? p 'procedure))

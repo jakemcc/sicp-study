@@ -55,4 +55,4 @@
     (env-loop env)))
 
 (defn define-variable! [variable value env]
-  (swap! (first-frame env) frame assoc variable value))
+  (swap! (first-frame env) assoc variable value))
