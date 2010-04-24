@@ -300,22 +300,30 @@
                  proc))))
 
 (defmulti analyze-method tag)
-(defmethod analyze-method 'quoted
-  [exp]
-  (analyze-quoted exp))
-(defmethod analyze-method 'assignment
-  [exp]
-  (analyze-assignment exp))
-(defmethod analyze-method 'definition
-  [exp]
-  (analyze-definition exp))
-(defmethod analyze-method 'if [exp]
-  (analyze-if exp))
-(defmethod analyze-method 'labmda [exp]
-  (analyze-lambda exp))
+(defmethod analyze-method 'quoted [exp] (analyze-quoted exp))
+(defmethod analyze-method 'assignment [exp] (analyze-assignment exp))
+(defmethod analyze-method 'definition  [exp] (analyze-definition exp))
+(defmethod analyze-method 'if [exp] (analyze-if exp))
+(defmethod analyze-method 'labmda [exp] (analyze-lambda exp))
 (defmethod analyze-method 'begin [exp] (analyze-sequence (begin-actions exp)))
 (defmethod analyze-method 'cond [exp] (analyze (cond->if exp)))
 (defmethod analyze-method :default [exp] (analyze-application exp))
+
+(defmulti eval-method (fn [exp env] (tag exp)))
+; This method applys the function.
+(defmethod eval-method :default [exp env]
+  (my-apply (my-eval (operator exp) env)
+            (list-of-values (operands exp) env)))
+(defmethod eval-method 'quote [exp env] (text-of-quotation exp))
+(defmethod eval-method 'set! [exp env] (eval-assignment exp env))
+(defmethod eval-method 'define [exp env] (eval-definition exp env))
+(defmethod eval-method 'lambda [exp env]
+  (make-procedure (lambda-parameters exp)
+                  (lambda-body exp)
+                  env))
+(defmethod eval-method 'if [exp env]  (eval-if exp env))
+(defmethod eval-method 'begin [exp env] (eval-sequence (begin-actions exp) env))
+(defmethod eval-method 'cond [exp env] (my-eval (cond->if exp) env))
 
 (defn analyze [exp]
   (cond (self-evaluating? exp) 
@@ -323,40 +331,10 @@
         (variable? exp) (analyze-variable exp)
         :else (analyze-method exp)))
 
-(defmulti eval-method (fn [exp env] (tag exp)))
-
-; This method applys the function.
-(defmethod eval-method :default [exp env]
-  (my-apply (my-eval (operator exp) env)
-            (list-of-values (operands exp) env)))
-
-(defmethod eval-method 'quote [exp env]
-  (text-of-quotation exp))
-
-(defmethod eval-method 'set! [exp env]
-  (eval-assignment exp env))
-
-(defmethod eval-method 'define [exp env]
-  (eval-definition exp env))
-
-(defmethod eval-method 'lambda [exp env]
-  (make-procedure (lambda-parameters exp)
-                  (lambda-body exp)
-                  env))
-
-(defmethod eval-method 'if [exp env]
-  (eval-if exp env))
-
-(defmethod eval-method 'begin [exp env]
-  (eval-sequence (begin-actions exp) env))
-
 (defn my-eval [exp env]
   (cond (self-evaluating? exp) exp
         (variable? exp) (lookup-variable-value exp env)
         :else (eval-method exp env)))
-
-(defmethod eval-method 'cond [exp env]
-  (my-eval (cond->if exp) env))
 
 (defn my-apply [procedure arguments]
   (cond (primitive-procedure? procedure)
