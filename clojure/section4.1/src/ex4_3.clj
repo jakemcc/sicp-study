@@ -1,11 +1,12 @@
 
-(ns data-directed-sec4
+(ns ex4-3
   (:use scheme-helpers
         environment))
 
 (declare execute-application
          primitive-procedure-names
-         primitive-procedure-objects)
+         primitive-procedure-objects
+         expand-clauses)
 
 (declare my-eval
          my-apply
@@ -298,20 +299,29 @@
                  "Unknown procedure type -- EXECUTE-APPLICATION"
                  proc))))
 
+(defmulti analyze-method tag)
+(defmethod analyze-method 'quoted
+  [exp]
+  (analyze-quoted exp))
+(defmethod analyze-method 'assignment
+  [exp]
+  (analyze-assignment exp))
+(defmethod analyze-method 'definition
+  [exp]
+  (analyze-definition exp))
+(defmethod analyze-method 'if [exp]
+  (analyze-if exp))
+(defmethod analyze-method 'labmda [exp]
+  (analyze-lambda exp))
+(defmethod analyze-method 'begin [exp] (analyze-sequence (begin-actions exp)))
+(defmethod analyze-method 'cond [exp] (analyze (cond->if exp)))
+(defmethod analyze-method :default [exp] (analyze-application exp))
+
 (defn analyze [exp]
   (cond (self-evaluating? exp) 
         (analyze-self-evaluating exp)
-        (quoted? exp) (analyze-quoted exp)
         (variable? exp) (analyze-variable exp)
-        (assignment? exp) (analyze-assignment exp)
-        (definition? exp) (analyze-definition exp)
-        (if? exp) (analyze-if exp)
-        (lambda? exp) (analyze-lambda exp)
-        (begin? exp) (analyze-sequence (begin-actions exp))
-        (cond? exp) (analyze (cond->if exp))
-        (application? exp) (analyze-application exp)
-        :else
-        (Error. (str "Unknown expression type -- ANALYZE " exp))))
+        :else (analyze-method exp)))
 
 (defmulti eval-method (fn [exp env] (tag exp)))
 
