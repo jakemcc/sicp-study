@@ -1,7 +1,7 @@
 
-(ns section4-test
+(ns data-directed-tests
   (:use clojure.test
-        section4))
+        data-directed-sec4))
 
 (use-fixtures :each (fn [f] (reset-global-environment) (f)))
 

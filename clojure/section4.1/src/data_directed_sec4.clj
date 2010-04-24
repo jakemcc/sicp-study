@@ -1,5 +1,5 @@
 
-(ns section4
+(ns data-directed-sec4
   (:use scheme-helpers
         environment))
 
@@ -27,6 +27,11 @@
 ; to left
 
 (declare if-predicate if-alternative if-consequent)
+
+(defn tag [exp]
+  (if (seq? exp)
+    (first exp)
+    (Error. (str "this shouldn't happen"))))
 
 (defn eval-if [exp env]
   (if (true? (my-eval (if-predicate exp) env))
@@ -72,20 +77,11 @@
     (= (first exp) tag)
     false))
 
-(defn quoted? [exp]
-  (tagged-list? exp 'quote))
-
 (defn text-of-quotation [exp] (cadr exp))
-
-(defn assignment? [exp]
-  (tagged-list? exp 'set!))
 
 (defn assignment-variable [exp] (second exp))
 
 (defn assignment-value [exp] (nth exp 2))
-
-(defn definition? [exp]
-  (tagged-list? exp 'define))
 
 (defn definition-variable [exp]
   (if (symbol? (second exp))
@@ -100,16 +96,12 @@
     (make-lambda (rest (first (rest exp))) ; formal parameters
                  (rest (rest exp)))))          ; body
 
-(defn lambda? [exp] (tagged-list? exp 'lambda))
-
 (defn lambda-parameters [exp] (second exp))
 
 (defn lambda-body [exp] (rest (rest exp)))
 
 (defn make-lambda [parameters body]
   (cons 'lambda (cons parameters body)))
-
-(defn if? [exp] (tagged-list? exp 'if))
 
 (defn if-predicate [exp] (cadr exp))
 
@@ -122,8 +114,6 @@
 
 (defn make-if [predicate consequent alternative]
   (list 'if predicate consequent alternative))
-
-(defn begin? [exp] (tagged-list? exp 'begin))
 
 (defn begin-actions [exp] (cdr exp))
 
@@ -153,9 +143,6 @@
 (defn first-operand [ops] (car ops))
 
 (defn rest-operands [ops] (cdr ops))
-
-(declare expand-clauses)
-(defn cond? [exp] (tagged-list? exp 'cond))
 
 (defn cond-clauses [exp] (cdr exp))
 
@@ -326,24 +313,40 @@
         :else
         (Error. (str "Unknown expression type -- ANALYZE " exp))))
 
+(defmulti eval-method (fn [exp env] (tag exp)))
+
+; This method applys the function.
+(defmethod eval-method :default [exp env]
+  (my-apply (my-eval (operator exp) env)
+            (list-of-values (operands exp) env)))
+
+(defmethod eval-method 'quote [exp env]
+  (text-of-quotation exp))
+
+(defmethod eval-method 'set! [exp env]
+  (eval-assignment exp env))
+
+(defmethod eval-method 'define [exp env]
+  (eval-definition exp env))
+
+(defmethod eval-method 'lambda [exp env]
+  (make-procedure (lambda-parameters exp)
+                  (lambda-body exp)
+                  env))
+
+(defmethod eval-method 'if [exp env]
+  (eval-if exp env))
+
+(defmethod eval-method 'begin [exp env]
+  (eval-sequence (begin-actions exp) env))
+
 (defn my-eval [exp env]
   (cond (self-evaluating? exp) exp
         (variable? exp) (lookup-variable-value exp env)
-        (quoted? exp) (text-of-quotation exp)
-        (assignment? exp) (eval-assignment exp env)
-        (definition? exp) (eval-definition exp env)
-        (if? exp) (eval-if exp env)
-        (lambda? exp)
-          (make-procedure (lambda-parameters exp)
-                          (lambda-body exp)
-                          env)
-        (begin? exp)
-          (eval-sequence (begin-actions exp) env)
-        (cond? exp) (my-eval (cond->if exp) env)
-        (application? exp)
-          (my-apply (my-eval (operator exp) env)
-                    (list-of-values (operands exp) env))
-        :else (Error. (str "Unknown expression type -- EVAL " exp))))
+        :else (eval-method exp env)))
+
+(defmethod eval-method 'cond [exp env]
+  (my-eval (cond->if exp) env))
 
 (defn my-apply [procedure arguments]
   (cond (primitive-procedure? procedure)
