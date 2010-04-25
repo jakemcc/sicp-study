@@ -1,0 +1,1 @@
+; Exerise 4.5 was done in section4.clj and section4_tests.clj
