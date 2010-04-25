@@ -29,9 +29,9 @@
 (declare if-predicate if-alternative if-consequent)
 
 (defn eval-if [exp env]
-  (if (true? (my-eval (if-predicate exp) env))
-      (my-eval (if-consequent exp) env)
-      (my-eval (if-alternative exp) env)))
+  (if (my-eval (if-predicate exp) env)
+    (my-eval (if-consequent exp) env)
+    (my-eval (if-alternative exp) env)))
 
 (declare last-exp? first-exp rest-exps)
 
@@ -57,10 +57,10 @@
     env)
   'ok)
 
-(defn self-evaluating? [exp] 
-  (cond (number? exp) true
-        (string? exp) true
-        :else false))
+(defn self-evaluating? [exp]
+  (or (number? exp)
+      (string? exp)
+      (and (seq? exp) (self-evaluating? (first exp)))))
 
 (defn variable? [exp]
   (or (symbol? exp)
@@ -169,19 +169,51 @@
 (defn cond->if [exp]
   (expand-clauses (cond-clauses exp)))
 
+(defn extended-cond? [clause]
+  (and (list? clause)
+       (> (count clause) 2)
+       (= (second clause) '=>)))
+
+(defn extended-cond-test [clause]
+  (first clause))
+
+(defn extended-cond-recipient [clause]
+  (nth clause 2))
+
 (defn expand-clauses [clauses]
   (if (null? clauses)
     'false
     (let [first-clause (car clauses)
           rest-clauses (cdr clauses)]
-      (if (cond-else-clause? first-clause)
-        (if (null? rest-clauses)
-          (sequence->exp (cond-actions first-clause))
-          (Error. (str  "ELSE clause isn't last -- COND->IF"
-                        clauses)))
-        (make-if (cond-predicate first-clause)
-                 (sequence->exp (cond-actions first-clause))
-                 (expand-clauses rest-clauses))))))
+      (cond (cond-else-clause? first-clause)
+            (if (null? rest-clauses)
+              (sequence->exp (cond-actions first-clause))
+              (Error. (str  "ELSE clause isn't last -- COND->IF"
+                            clauses)))
+            (extended-cond? first-clause)
+            (make-if (extended-cond-test first-clause)
+                     (list
+                      (extended-cond-recipient first-clause)
+                      (extended-cond-test first-clause))
+                     (expand-clauses rest-clauses))
+            :else
+            (make-if (cond-predicate first-clause)
+                     (sequence->exp (cond-actions first-clause))
+                     (expand-clauses rest-clauses))))))
+(comment
+  (defn expand-clauses [clauses]
+    (if (null? clauses)
+      'false
+      (let [first-clause (car clauses)
+            rest-clauses (cdr clauses)]
+        (if (cond-else-clause? first-clause)
+          (if (null? rest-clauses)
+            (sequence->exp (cond-actions first-clause))
+            (Error. (str  "ELSE clause isn't last -- COND->IF"
+                          clauses)))
+          (make-if (cond-predicate first-clause)
+                   (sequence->exp (cond-actions first-clause))
+                   (expand-clauses rest-clauses)))))))
 
 (defn make-procedure [parameters body env]
   (list 'procedure parameters body env))
@@ -257,6 +289,7 @@
 (def primitive-procedures
      (list (list 'car car)
            (list 'cdr cdr)
+           (list 'cadr cadr)
            (list 'cons cons)
            (list 'null? null?)
            (list '+ +)
@@ -283,6 +316,7 @@
                             the-empty-environment)]
     (define-variable! 'true true initial-env)
     (define-variable! 'false false initial-env)
+    (define-variable! 'nil nil initial-env)
     initial-env))
 
 (def the-global-environment (setup-environment))
