@@ -214,7 +214,6 @@
 (defn procedure-environment [p] (cadddr p))
 
 (defn let? [exp]
-  (println exp)
   (tagged-list? exp 'let))
 
 (defn let-body [exp]
@@ -227,13 +226,23 @@
   (map second (second exp)))
 
 (defn let->combination [exp]
-  (println "vars " (let-variables exp))
-  (println "vals " (let-values exp))
-  (println "body " (let-body exp))
   (cons
    (make-lambda (let-variables exp)
                 (list (let-body exp)))
    (let-values exp)))
+
+(defn let*? [exp]
+  (tagged-list? exp 'let*))
+
+(defn make-let [clauses body]
+  (list 'let (list clauses) body))
+
+(defn let*->nested-lets [exp]
+  (let [let-clauses (reverse (second exp))
+        body (let-body exp)]
+    (reduce #(make-let %2 %1) body let-clauses)))
+
+
 
 (defn analyze-sequence [exps]
   (letfn [(sequentially [proc1 proc2]
@@ -383,6 +392,7 @@
           (eval-sequence (begin-actions exp) env)
         (cond? exp) (my-eval (cond->if exp) env)
         (let? exp) (my-eval (let->combination exp) env)
+        (let*? exp) (my-eval (let*->nested-lets exp) env)
         (application? exp)
           (my-apply (my-eval (operator exp) env)
                     (list-of-values (operands exp) env))
