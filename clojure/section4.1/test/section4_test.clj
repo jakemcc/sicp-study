@@ -42,6 +42,7 @@
 (deftest test-different-cond-format
   (is (= 2 (interpret '(cond ((1 2 3) => cadr)
                              (else false))))))
+
 (deftest test-or
     (is (interpret '(or 5 4 3)))
     (is (false? (interpret '(or false false)))))
@@ -78,3 +79,12 @@
           x
           (exp (* x x) (- y 1)))))
     (is (= 25 (interpret '(exp 5 2)))))
+
+; Exercise 4.6
+(deftest basic-let-form-works
+  (is (= 2
+         (interpret '(let ((a 2))
+                       a))))
+  (is (= 42
+         (interpret '(let ((a 2) (b 40))
+                       (+ a b))))))

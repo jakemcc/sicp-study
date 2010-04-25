@@ -200,20 +200,6 @@
             (make-if (cond-predicate first-clause)
                      (sequence->exp (cond-actions first-clause))
                      (expand-clauses rest-clauses))))))
-(comment
-  (defn expand-clauses [clauses]
-    (if (null? clauses)
-      'false
-      (let [first-clause (car clauses)
-            rest-clauses (cdr clauses)]
-        (if (cond-else-clause? first-clause)
-          (if (null? rest-clauses)
-            (sequence->exp (cond-actions first-clause))
-            (Error. (str  "ELSE clause isn't last -- COND->IF"
-                          clauses)))
-          (make-if (cond-predicate first-clause)
-                   (sequence->exp (cond-actions first-clause))
-                   (expand-clauses rest-clauses)))))))
 
 (defn make-procedure [parameters body env]
   (list 'procedure parameters body env))
@@ -226,6 +212,28 @@
 (defn procedure-body [p] (caddr p))
 
 (defn procedure-environment [p] (cadddr p))
+
+(defn let? [exp]
+  (println exp)
+  (tagged-list? exp 'let))
+
+(defn let-body [exp]
+  (nth exp 2))
+
+(defn let-variables [exp]
+  (map first (second exp)))
+
+(defn let-values [exp]
+  (map second (second exp)))
+
+(defn let->combination [exp]
+  (println "vars " (let-variables exp))
+  (println "vals " (let-values exp))
+  (println "body " (let-body exp))
+  (cons
+   (make-lambda (let-variables exp)
+                (list (let-body exp)))
+   (let-values exp)))
 
 (defn analyze-sequence [exps]
   (letfn [(sequentially [proc1 proc2]
@@ -374,6 +382,7 @@
         (begin? exp)
           (eval-sequence (begin-actions exp) env)
         (cond? exp) (my-eval (cond->if exp) env)
+        (let? exp) (my-eval (let->combination exp) env)
         (application? exp)
           (my-apply (my-eval (operator exp) env)
                     (list-of-values (operands exp) env))
