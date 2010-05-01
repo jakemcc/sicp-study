@@ -113,6 +113,3 @@
                        (fib-iter (+ a b) a (- count 1))))))
   (is (= 3 (interpret '(fib 4)))))
 
-
-
-
