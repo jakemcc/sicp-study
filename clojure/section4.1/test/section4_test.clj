@@ -102,3 +102,17 @@
                             (z (+ x y 5)))
                            (* x z))))))
 
+; Exercise 4.8
+(deftest let-supports-named-let
+  (interpret '(define (fib n)
+                (let fib-iter ((a 1)
+                               (b 0)
+                               (count n))
+                     (if (= count 0)
+                       b
+                       (fib-iter (+ a b) a (- count 1))))))
+  (is (= 3 (interpret '(fib 4)))))
+
+
+
+

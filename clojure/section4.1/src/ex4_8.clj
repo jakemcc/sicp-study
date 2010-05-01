@@ -1,0 +1,1 @@
+; Exercise 4.8 has been solved in section4.clj and section4_test.clj

@@ -216,20 +216,53 @@
 (defn let? [exp]
   (tagged-list? exp 'let))
 
+(defn named-let? [exp]
+  (symbol? (second exp)))
+
 (defn let-body [exp]
-  (nth exp 2))
+  (if (named-let? exp)
+    (nth exp 3)
+    (nth exp 2)))
 
 (defn let-variables [exp]
-  (map first (second exp)))
+  (if (named-let? exp)
+    (map first (nth exp 2))
+    (map first (second exp))))
 
 (defn let-values [exp]
-  (map second (second exp)))
+  (if (named-let? exp)
+    (map second (nth exp 2))
+    (map second (second exp))))
 
+(defn let-name [exp]
+  (second exp))
+
+(defn make-definition [fn-name parameters body]
+  (let [a 
+        (list 'define (cons fn-name parameters) body)]
+    (println a)
+    a))
+
+; define function
+; eval function with arguments
 (defn let->combination [exp]
-  (cons
-   (make-lambda (let-variables exp)
-                (list (let-body exp)))
-   (let-values exp)))
+  (let [parameters (let-variables exp)
+        args (let-values exp)
+        body (let-body exp)]
+    (if (named-let? exp)
+      (sequence->exp
+       (list
+        (make-definition (let-name exp)
+                         parameters
+                         body)
+        (cons
+         (let-name exp)
+         args)))
+      (cons
+       (make-lambda (let-variables exp)
+                    (list (let-body exp)))
+       (let-values exp)))
+    ))
 
 (defn let*? [exp]
   (tagged-list? exp 'let*))
