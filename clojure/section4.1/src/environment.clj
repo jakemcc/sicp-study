@@ -35,13 +35,17 @@
   (letfn [(env-loop [env]
                     (letfn [(scan [frame]
                                   (if (contains? frame variable)
-                                    (get frame variable)
+                                    (let [value (get frame variable)]
+                                      (if (= value '*unassigned*)
+                                        (Error. (str "Unassigned variable " variable))
+                                        value))
                                     (env-loop (enclosing-environment env))))]
                       (if (= env the-empty-environment)
                         (Error. (str "Unbound variable " variable))
                         (let [frame (first-frame env)]
                           (scan @frame)))))]
     (env-loop env)))
+
 
 (defn set-variable-value! [variable value env]
   (letfn [(env-loop [env]

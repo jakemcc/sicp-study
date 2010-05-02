@@ -66,3 +66,11 @@
     (is (= 1 (lookup-variable-value 'a e)))
     (unbind-variable! 'a e)
     (is (= (type (Error.)) (type (lookup-variable-value 'a e))))))
+
+; Exercise 4.16(a)
+(deftest unassigned-variable-gets-error
+  (let [e (extend-environment '(a)
+                              '(1)
+                              the-empty-environment)]
+    (set-variable-value! 'e '*unassigned* e)
+    (is (= (type (Error.)) (type (lookup-variable-value 'e e))))))

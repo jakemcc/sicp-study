@@ -119,3 +119,24 @@
   (interpret '(make-unbound! a))
   (is (= (type (Error.)) (type (interpret 'a)))))
 
+; Exercise 4.16
+(deftest scans-out-internal-definitions
+  (is (=
+       '(lambda jake
+                (let ((u '*unassigned*)
+                      (v '*unassigned*))
+                  (set! u e1)
+                  (set! v e2)
+                  e3))
+
+       (scan-out-defines
+        '(lambda jake
+                 (define u e1)
+                 (define v e2)
+                 e3)))))
+
+(deftest scan-out-defines-returns-original-when-no-internal-defines
+  (let [statement '(lambda (a b c d)
+                           (+ a (- b (+ c d))))]
+    (is (= statement
+           (scan-out-defines statement)))))

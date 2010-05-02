@@ -201,8 +201,9 @@
                      (sequence->exp (cond-actions first-clause))
                      (expand-clauses rest-clauses))))))
 
+(declare scan-out-defines)
 (defn make-procedure [parameters body env]
-  (list 'procedure parameters body env))
+  (list 'procedure parameters (scan-out-defines body) env))
 
 (defn compound-procedure? [p]
   (tagged-list? p 'procedure))
@@ -400,6 +401,41 @@
         (Error. (str
                  "Unknown procedure type -- EXECUTE-APPLICATION"
                  proc))))
+
+(defn is-define? [e]
+  (and (seq? e)
+       (tagged-list? e 'define)))
+
+(defn find-defines [exp]
+  (filter is-define? exp))
+
+(defn defined-variables [defs]
+  (map second defs))
+
+(defn defined-values [defs]
+  (map #(nth % 2) defs))
+
+(defn non-defines [exp]
+  (remove is-define? exp))
+
+(defn scan-out-defines [exp]
+  (let [defs (find-defines exp)]
+    (if (zero? (count defs))
+      exp
+      (let [variables (defined-variables defs)
+            values (defined-values defs)
+            body (nth (non-defines exp) 2)
+            vars (second (non-defines exp))]
+        (list 'lambda
+              vars
+              (cons 'let
+                    (cons (map #(list % (quote (quote *unassigned*))) variables)
+                          (concat (map
+                                   #(list 'set! %1 %2)
+                                   variables
+                                   values)
+                                  (list body)))))))))
+
 
 (defn analyze [exp]
   (cond (self-evaluating? exp) 
