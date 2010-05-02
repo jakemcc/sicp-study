@@ -90,26 +90,32 @@
                         (+ a b))))))
 
 ; Exercise 4.7
- 
-(deftest let*-works
-  (is (= 42
-         (interpret '(let* ((a 2)
-                            (b (+ a 40)))
-                           b))))
-  (is (= 39
-         (interpret '(let* ((x 3)
-                            (y (+ x 2))
-                            (z (+ x y 5)))
-                           (* x z))))))
+ (deftest let*-works
+   (is (= 42
+          (interpret '(let* ((a 2)
+                             (b (+ a 40)))
+                            b))))
+   (is (= 39
+          (interpret '(let* ((x 3)
+                             (y (+ x 2))
+                             (z (+ x y 5)))
+                            (* x z))))))
 
 ; Exercise 4.8
-(deftest let-supports-named-let
-  (interpret '(define (fib n)
-                (let fib-iter ((a 1)
-                               (b 0)
-                               (count n))
-                     (if (= count 0)
-                       b
-                       (fib-iter (+ a b) a (- count 1))))))
-  (is (= 3 (interpret '(fib 4)))))
+ (deftest let-supports-named-let
+   (interpret '(define (fib n)
+                 (let fib-iter ((a 1)
+                                (b 0)
+                                (count n))
+                      (if (= count 0)
+                        b
+                        (fib-iter (+ a b) a (- count 1))))))
+   (is (= 3 (interpret '(fib 4)))))
+
+; Exercise 4.13
+(deftest can-remove-binding-from-environment
+  (interpret '(define a 1))
+  (is (= 1 (interpret 'a)))
+  (interpret '(make-unbound! a))
+  (is (= (type (Error.)) (type (interpret 'a)))))
 

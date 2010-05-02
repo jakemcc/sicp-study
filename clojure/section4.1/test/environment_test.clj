@@ -59,3 +59,10 @@
     (define-variable! 'b 2 e2)
     (is (not (environments-equal? e e2)))))
 
+(deftest can-unbind-variable-from-frame
+  (let [e (extend-environment '(a b c d)
+                              '(1 2 3 4)
+                              the-empty-environment)]
+    (is (= 1 (lookup-variable-value 'a e)))
+    (unbind-variable! 'a e)
+    (is (= (type (Error.)) (type (lookup-variable-value 'a e))))))

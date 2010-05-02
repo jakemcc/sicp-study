@@ -56,3 +56,6 @@
 
 (defn define-variable! [variable value env]
   (swap! (first-frame env) assoc variable value))
+
+(defn unbind-variable! [variable env]
+  (swap! (first-frame env) dissoc variable))

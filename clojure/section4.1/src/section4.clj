@@ -238,10 +238,8 @@
   (second exp))
 
 (defn make-definition [fn-name parameters body]
-  (let [a 
-        (list 'define (cons fn-name parameters) body)]
-    (println a)
-    a))
+  (list 'define (cons fn-name parameters) body))
+
 
 ; define function
 ; eval function with arguments
@@ -374,6 +372,14 @@
 (defn reset-global-environment []
   (def the-global-environment (setup-environment)))
 
+; Exercise 4.13
+(defn unbind? [exp]
+  (tagged-list? exp 'make-unbound!))
+
+(defn eval-unbind [exp env]
+  (unbind-variable! (second exp) env)
+  'ok)
+
 (defn primitive-procedure? [proc]
   (tagged-list? proc 'primitive))
 
@@ -415,6 +421,7 @@
         (variable? exp) (lookup-variable-value exp env)
         (quoted? exp) (text-of-quotation exp)
         (assignment? exp) (eval-assignment exp env)
+        (unbind? exp) (eval-unbind exp env)
         (definition? exp) (eval-definition exp env)
         (if? exp) (eval-if exp env)
         (lambda? exp)
