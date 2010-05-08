@@ -29,27 +29,27 @@
 		  (procedure (first items))
 		  (recur (rest items))))))
 
-(deftype Constant [connector] :as this
+(defrecord Constant [connector]
   Connection
-  (has-value? [] true)
-  (get-value [] (get-value connector))
-  (set-value! [new-value setter] (Error. "Unknown request -- CONSTANT"))
-  (forget-value! [retractor] (Error. "Unknown request -- CONSTANT"))
-  (connect [new-constraint] (Error. "Unknown request -- CONSTANT")))
+  (has-value? [this] true)
+  (get-value [this] (get-value connector))
+  (set-value! [this new-value setter] (Error. "Unknown request -- CONSTANT"))
+  (forget-value! [this retractor] (Error. "Unknown request -- CONSTANT"))
+  (connect [this new-constraint] (Error. "Unknown request -- CONSTANT")))
 
 (defn make-constant [value connector]
-  (let [constant (Constant connector)]
+  (let [constant (Constant. connector)]
     (connect connector constant)
     (set-value! connector value constant)
     constant))
 
-(deftype Connector [value informant constraints] :as this
+(defrecord Connector [value informant constraints]
   Connection
-  (has-value? [] (if @informant true false))
+  (has-value? [this] (if @informant true false))
 
-  (get-value [] @value)
+  (get-value [this] @value)
 
-  (set-value! [new-value setter]
+  (set-value! [this new-value setter]
     (cond (not (has-value? this))
 	  (do (swap! value (fn [x] new-value))
 	      (swap! informant (fn [x] setter))
@@ -60,7 +60,7 @@
 	  (println (str "Contradiction! (" @value " " new-value ")"))
 	  :else :ignored))
 
-  (forget-value! [retractor]
+  (forget-value! [this retractor]
     (if (= retractor @informant)
         (do (swap! informant (fn [x] false))
 	    (for-each-except retractor
@@ -68,7 +68,7 @@
 			     @constraints))
 	:ignored))
 
-  (connect [new-constraint]
+  (connect [this new-constraint]
     (if (not (some #{new-constraint} @constraints))
         (swap! constraints #(cons new-constraint %)))
     (if (has-value? this)
@@ -76,13 +76,12 @@
     :done))
 
 (defn make-connector []
-  (Connector (atom false) (atom false) (atom '())))
+  (Connector. (atom false) (atom false) (atom '())))
 
-(deftype Multiplier [m1 m2 product]
-  :as this
+(defrecord Multiplier [m1 m2 product]
   Constraint
   (process-new-value
-   []
+   [this]
    (cond (or (and (has-value? m1) (zero? (get-value m1)))
 	     (and (has-value? m2) (zero? (get-value m2))))
 	 (set-value! product 0 this)
@@ -100,22 +99,22 @@
 		     this)))
 
   (process-forget-value
-   []
+   [this]
    (forget-value! product this)
    (forget-value! m1 this)
    (forget-value! m2 this)
    (process-new-value this)))
 
 (defn make-multiplier [m1 m2 product]
-  (let [multiplier (Multiplier m1 m2 product)]
+  (let [multiplier (Multiplier. m1 m2 product)]
     (connect m1 multiplier)
     (connect m2 multiplier)
     (connect product multiplier)))
 
-(deftype Adder [a1 a2 sum] :as this
+(defrecord Adder [a1 a2 sum]
   Constraint
   (process-new-value
-   []
+   [this]
    (cond (and (has-value? a1) (has-value? a2))
 	 (set-value! sum
 		     (+ (get-value a1) (get-value a2))
@@ -130,14 +129,14 @@
 		     this)))
 
   (process-forget-value
-   []
+   [this]
    (forget-value! a1 this)
    (forget-value! a2 this)
    (forget-value! sum this)
    (process-new-value this)))
 
 (defn make-adder [a1 a2 sum]
-  (let [adder (Adder a1 a2 sum)]
+  (let [adder (Adder. a1 a2 sum)]
     (connect a1 adder)
     (connect a2 adder)
     (connect sum adder)))
@@ -145,17 +144,17 @@
 (defn print-probe [name value]
   (println "Probe: " name " = " value))
 
-(deftype Probe [name connector] :as this
+(defrecord Probe [name connector]
   Constraint
   (process-new-value
-   []
+   [this]
    (print-probe name (get-value connector)))
   (process-forget-value
-   []
+   [this]
    (print-probe name "?")))
 
 (defn make-probe [name connector]
-  (let [probe (Probe name connector)]
+  (let [probe (Probe. name connector)]
     (connect connector probe)
     probe))
 
