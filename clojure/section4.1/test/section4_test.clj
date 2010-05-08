@@ -140,3 +140,24 @@
                            (+ a (- b (+ c d))))]
     (is (= statement
            (scan-out-defines statement)))))
+
+; Exercise 4.20
+(deftest letrec-works-by-transforming-into-let-set!-combo
+  (is (= '(let ((increment '*unassigned*))
+            (begin
+             (set! increment (lambda (n)
+                                     (+ 1 n)))
+             (increment 1)))
+         
+         (letrec->let '(letrec ((increment
+                                 (lambda (n)
+                                         (+ 1 n))))
+                               (increment 1))))))
+
+(deftest letrec-can-be-evalulated
+  (is (= 2
+         (interpret '(letrec ((increment
+                                 (lambda (n)
+                                         (+ 1 n))))
+                               (increment 1))))))
+
