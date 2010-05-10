@@ -273,65 +273,6 @@
         body (let-body exp)]
     (reduce #(make-let (list %2) %1) body let-clauses)))
 
-(defn analyze-sequence [exps]
-  (letfn [(sequentially [proc1 proc2]
-                        (fn [env] (proc1 env) (proc2 env)))
-          (lop [first-proc rest-procs]
-               (if (null? rest-procs)
-                 first-proc
-                 (lop (sequentially first-proc (car rest-procs))
-                      (cdr rest-procs))))]
-    (let [procs (map analyze exps)]
-      (if (null? procs)
-        (Error. "Empty sequence -- ANALYZE"))
-      (lop (car procs) (cdr procs)))))
-
-(defn analyze-application [exp]
-  (let [fproc (analyze (operator exp))
-        aprocs (map analyze (operands exp))]
-    (fn [env]
-      (execute-application (fproc env)
-                           (map (fn [aproc] (aproc env))
-                                aprocs)))))
-
-(defn analyze-self-evaluating [exp]
-  (fn [env] exp))
-
-(defn analyze-quoted [exp]
-  (let [qval (text-of-quotation exp)]
-    (fn [env] qval)))
-
-(defn analyze-variable [exp]
-  (fn [env] (lookup-variable-value exp env)))
-
-(defn analyze-assignment [exp]
-  (let [var (assignment-variable exp)
-        vproc (analyze (assignment-value exp))]
-    (fn [env]
-      (set-variable-value! var (vproc env) env)
-      'ok)))
-
-(defn analyze-definition [exp]
-  (let [var (definition-variable exp)
-        vproc (analyze (definition-value exp))]
-    (fn [env]
-      (define-variable! var (vproc env) env)
-      'ok)))
-
-(defn analyze-if [exp]
-  (let [pproc (analyze (if-predicate exp))
-        cproc (analyze (if-consequent exp))
-        aproc (analyze (if-alternative exp))]
-    (fn [env]
-      (if (true? (pproc env))
-        (cproc env)
-        (aproc env)))))
-
-(defn analyze-lambda [exp]
-  (let [vars (lambda-parameters exp)
-        bproc (analyze-sequence (lambda-body exp))]
-    (fn [env] (make-procedure vars bproc env))))
-
 (def primitive-procedures
      (list (list 'car car)
            (list 'cdr cdr)
@@ -448,22 +389,6 @@
       (concat
        (map #(list 'set! %1 %2) fn-names fn-vals)
        (list body))))))
-
-
-(defn analyze [exp]
-  (cond (self-evaluating? exp) 
-        (analyze-self-evaluating exp)
-        (quoted? exp) (analyze-quoted exp)
-        (variable? exp) (analyze-variable exp)
-        (assignment? exp) (analyze-assignment exp)
-        (definition? exp) (analyze-definition exp)
-        (if? exp) (analyze-if exp)
-        (lambda? exp) (analyze-lambda exp)
-        (begin? exp) (analyze-sequence (begin-actions exp))
-        (cond? exp) (analyze (cond->if exp))
-        (application? exp) (analyze-application exp)
-        :else
-        (Error. (str "Unknown expression type -- ANALYZE " exp))))
 
 (defn my-eval [exp env]
   (cond (self-evaluating? exp) exp
