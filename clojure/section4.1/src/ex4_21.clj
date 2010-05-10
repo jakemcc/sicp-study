@@ -14,13 +14,12 @@
 (defn fibonacci [n]
   (if (<= n 2)
     1
-   ((fn [fib x y]
-      (fib fib x y n))
+   ((fn [fib]
+      (fib fib 1 1 n))
     (fn [ft x y k]
       (if (= k 2)
         y
-        (ft ft y (+ x y) (- k 1))))
-    1 1)))
+        (ft ft y (+ x y) (- k 1)))))))
 
 ; Part b
 (defn is-even? [x]
