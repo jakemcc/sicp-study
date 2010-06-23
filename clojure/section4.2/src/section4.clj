@@ -38,6 +38,7 @@
   (cond (last-exp? exps) (my-eval (first-exp exps) env)
         :else (do (my-eval (first-exp exps) env)
                   (eval-sequence (rest-exps exps) env))))
+;make above a recur
 
 (declare assignment-variable assignment-value)
 
@@ -398,13 +399,13 @@
   (= clojure.lang.Atom (class x)))
 
 (defn thunk? [obj]
-  ;  (println "thunk? " obj " " (type obj) (atom? obj))
+;  (println "thunk? " obj " " (type obj) (atom? obj))
   (if (atom? obj)
     (= Thunk (class @obj))
     false))
 
 (defn delay-it [exp env]
-   (Thunk. exp env))
+   (atom (Thunk. exp env)))
 
 (defn evaluated-thunk? [obj]
   (if (atom? obj)
@@ -414,7 +415,7 @@
   (Evaluated-Thunk. new-value))
 
 (defn force-it [obj]
-  ;  (println "force-it: " obj)
+;  (println "force-it: " obj)
   (cond
    (thunk? obj)
    (let [result (actual-value (:exp @obj)
@@ -425,11 +426,14 @@
    :else obj))
 
 (defn actual-value [exp env]
-  ;  (println "Actual value: " exp)
-  (force-it (my-eval exp env)))
+;  (println "Actual value: " exp)
+  (let [actual (my-eval exp env)
+	forced (force-it actual)]
+;    (println "forced: " forced)
+    forced))
 
 (defn list-of-arg-values [exp env]
-  ;  (println "load: " exp)
+;  (println "list-of-arg-values: " exp)
   (if (no-operands? exp)
     '()
     (cons (actual-value (first-operand exp) env)
@@ -469,7 +473,7 @@
 
 
 (defn my-apply [procedure arguments env]
-  ;  (println "apply: " procedure " " arguments)
+; (println "apply: " procedure " " arguments)
   (cond (primitive-procedure? procedure)
           (apply-primitive-procedure
            procedure

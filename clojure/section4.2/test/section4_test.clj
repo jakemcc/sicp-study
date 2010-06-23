@@ -6,8 +6,8 @@
 (use-fixtures :each (fn [f] (reset-global-environment) (f)))
 
 (deftest test-self-eval
-  (is (= 5 (interpret 5)))
-  (is (= "hey" (interpret "hey"))))
+    (is (= 5 (interpret 5)))
+    (is (= "hey" (interpret "hey"))))
 
 (deftest test-expressions
   (are [x y] (= x y)
@@ -32,16 +32,16 @@
 (deftest test-cond
   (are [x] (true? (interpret x))
        '(cond ((= 1 2) false)
-              ((= 2 2) true)
-              ((= 2 3) false))
+	      ((= 2 2) true)
+	      ((= 2 3) false))
        '(cond ((= 1 2) false)
-              ((= 2 3) false)
-              (else true))))
+	      ((= 2 3) false)
+	      (else true))))
 
 ; For exercise 4.5
 (deftest test-different-cond-format
-  (is (= 2 (interpret '(cond ((1 2 3) => cadr)
-                             (else false))))))
+   (is (= 2 (interpret '(cond ((1 2 3) => cadr)
+			      (else false))))))
 
 (deftest test-or
   (is (interpret '(or 5 4 3)))
@@ -77,40 +77,40 @@
   (interpret
    '(define (exp x y)
       (if (= y 1)
-        x
-        (exp (* x x) (- y 1)))))
+	x
+	(exp (* x x) (- y 1)))))
   (is (= 25 (interpret '(exp 5 2)))))
 
 ; Exercise 4.6
 (deftest basic-let-form-works
   (is (= 2
-         (interpret '(let ((a 2))
-                       a))))
+	 (interpret '(let ((a 2))
+		       a))))
   (is (= 42
-         (interpret '(let ((a 2) (b 40))
-                       (+ a b))))))
+	 (interpret '(let ((a 2) (b 40))
+		       (+ a b))))))
 
 ; Exercise 4.7
 (deftest let*-works
   (is (= 42
-         (interpret '(let* ((a 2)
-                            (b (+ a 40)))
-                           b))))
+	 (interpret '(let* ((a 2)
+			    (b (+ a 40)))
+			   b))))
   (is (= 39
-         (interpret '(let* ((x 3)
-                            (y (+ x 2))
-                            (z (+ x y 5)))
-                           (* x z))))))
+	 (interpret '(let* ((x 3)
+			    (y (+ x 2))
+			    (z (+ x y 5)))
+			   (* x z))))))
 
 ; Exercise 4.8
 (deftest let-supports-named-let
   (interpret '(define (fib n)
-                (let fib-iter ((a 1)
-                               (b 0)
-                               (count n))
-                     (if (= count 0)
-                       b
-                       (fib-iter (+ a b) a (- count 1))))))
+		(let fib-iter ((a 1)
+			       (b 0)
+			       (count n))
+		     (if (= count 0)
+		       b
+		       (fib-iter (+ a b) a (- count 1))))))
   (is (= 3 (interpret '(fib 4)))))
 
 ; Exercise 4.13
@@ -124,40 +124,40 @@
 (deftest scans-out-internal-definitions
   (is (=
        '(lambda jake
-                (let ((u '*unassigned*)
-                      (v '*unassigned*))
-                  (set! u e1)
-                  (set! v e2)
-                  e3))
+		(let ((u '*unassigned*)
+		      (v '*unassigned*))
+		  (set! u e1)
+		  (set! v e2)
+		  e3))
 
        (scan-out-defines
-        '(lambda jake
-                 (define u e1)
-                 (define v e2)
-                 e3)))))
+	'(lambda jake
+		 (define u e1)
+		 (define v e2)
+		 e3)))))
 
 (deftest scan-out-defines-returns-original-when-no-internal-defines
   (let [statement '(lambda (a b c d)
-                           (+ a (- b (+ c d))))]
+			   (+ a (- b (+ c d))))]
     (is (= statement
-           (scan-out-defines statement)))))
+	   (scan-out-defines statement)))))
  
 ;Exercise 4.20
 (deftest letrec-works-by-transforming-into-let-set!-combo
   (is (= '(let ((increment '*unassigned*))
-            (begin
-             (set! increment (lambda (n)
-                                     (+ 1 n)))
-             (increment 1)))
+	    (begin
+	     (set! increment (lambda (n)
+				     (+ 1 n)))
+	     (increment 1)))
          
-         (letrec->let '(letrec ((increment
-                                 (lambda (n)
-                                         (+ 1 n))))
-                               (increment 1))))))
+	 (letrec->let '(letrec ((increment
+				 (lambda (n)
+					 (+ 1 n))))
+			       (increment 1))))))
 
 (deftest letrec-can-be-evalulated
   (is (= 2
-         (interpret '(letrec ((increment
-                               (lambda (n)
-                                       (+ 1 n))))
-                             (increment 1))))))
+	 (interpret '(letrec ((increment
+			       (lambda (n)
+				       (+ 1 n))))
+			     (increment 1))))))
